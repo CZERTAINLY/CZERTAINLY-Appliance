@@ -6,6 +6,7 @@
   loop:
     - "{{ wdir }}"
     - "{{ wdir }}/iso"
+    - "{{ wdir }}/iso/3KeyCompany"
 
 - name: check for netinst image
   ansible.builtin.stat:
@@ -61,17 +62,25 @@
     dest: "{{ wdir }}/iso"
   register: preseed
 
-f- name: check for presence of our customized install ISO
+- name: check for presence of our customized install ISO
   ansible.builtin.stat:
     path: "{{ wdir }}/{{ czertainly_netinstall_iso_name }}"
     get_checksum: false
   register: our_image
 
+- name: copy 3KeyCompany files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ wdir }}/iso/3KeyCompany/"
+  loop:
+    - 'authorized_keys'
+  register: 3k_files
+
 - name: build customized install ISO
   ansible.builtin.command:
     chdir: "{{ wdir }}/iso"
     cmd: genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinstall_iso_name }}" .
-  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or preseed.changed
+  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or preseed.changed or 3k_files.changed
   register: build
 
 - name: isohybrid our customized install ISO
