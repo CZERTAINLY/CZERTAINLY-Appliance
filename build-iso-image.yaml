@@ -1,0 +1,5 @@
+---
+- name: build image
+  hosts: local,localhost
+  roles:
+    - build-iso-image

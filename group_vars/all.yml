@@ -1,0 +1,7 @@
+---
+czertainly_netinstall_iso_name: czertainly-appliance-netinstall-0.1.iso
+wdir: tmp
+netinst_image:
+  name:   debian-11.5.0-amd64-netinst.iso
+  URL:    https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
+  SHA256: e307d0e583b4a8f7e5b436f8413d4707dd4242b70aea61eb08591dc0378522f3
