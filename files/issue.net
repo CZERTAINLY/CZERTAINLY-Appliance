@@ -1,0 +1,7 @@
+CZERTAINLY Appliance
+
+CZERTAINLY management interface is avaialble on https://czertainly.local/administrator/.
+
+You shout put the following line to your hosts file for the first connection to CZERTAINLY:
+
+\4    czertainly.local
