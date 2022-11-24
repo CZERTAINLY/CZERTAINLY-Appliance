@@ -80,6 +80,8 @@
     - motd
     - issue
     - issue.net
+    - grub-branding.service
+    - grub-branding.sh
   register: c3k_files
 
 - name: build customized install ISO

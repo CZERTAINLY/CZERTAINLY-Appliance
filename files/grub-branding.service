@@ -1,0 +1,7 @@
+[Unit]
+Description=CZERTAINLY grub branding script
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/grub-branding.sh
+[Install]
+WantedBy=multi-user.target
