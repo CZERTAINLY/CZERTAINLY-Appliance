@@ -1,5 +1,6 @@
 ---
-czertainly_netinstall_iso_name: czertainly-appliance-netinstall-0.1.iso
+czertainly_appliance_version: 1.0
+czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly_appliance_version }}.iso
 wdir: tmp
 netinst_image:
   name:   debian-11.5.0-amd64-netinst.iso

@@ -77,18 +77,25 @@
     - authorized_keys
     - czertainly.tga
     - czertainly.png
+    - grub-branding.service
+  register: c3k_files
+
+- name: copy 3KeyCompany templated files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ wdir }}/iso/3KeyCompany/{{ item }}"
+  loop:
     - motd
     - issue
     - issue.net
-    - grub-branding.service
     - grub-branding.sh
-  register: c3k_files
+  register: c3k_tfiles
 
 - name: build customized install ISO
   ansible.builtin.command:
     chdir: "{{ wdir }}/iso"
     cmd: genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinstall_iso_name }}" .
-  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or preseed.changed or c3k_files.changed
+  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or preseed.changed or c3k_files.changed or c3k_tfiles.changed
   register: build
 
 - name: isohybrid our customized install ISO
