@@ -2,3 +2,4 @@
 tmp/iso
 tmp/debian-*-amd64-netinst.iso
 tmp/czertainly-appliance-netinstall-*.iso
+tmp/czertainly-appliance-*.ova

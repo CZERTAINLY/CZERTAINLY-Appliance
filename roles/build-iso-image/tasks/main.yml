@@ -75,9 +75,9 @@
     dest: "{{ wdir }}/iso/3KeyCompany/"
   loop:
     - authorized_keys
-    - czertainly.tga
-    - czertainly.png
-    - grub-branding.service
+    - ansible.cfg
+    - inventory.conf
+    - czertainly-branding.yml
   register: c3k_files
 
 - name: copy 3KeyCompany templated files
@@ -85,10 +85,7 @@
     src: "{{ item }}.j2"
     dest: "{{ wdir }}/iso/3KeyCompany/{{ item }}"
   loop:
-    - motd
-    - issue
-    - issue.net
-    - grub-branding.sh
+    - czertainly_appliance_version
   register: c3k_tfiles
 
 - name: build customized install ISO
