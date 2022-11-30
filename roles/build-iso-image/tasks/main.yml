@@ -78,6 +78,7 @@
     - ansible.cfg
     - inventory.conf
     - czertainly-branding.yml
+    - czertainly-host-config.yml
   register: c3k_files
 
 - name: copy 3KeyCompany templated files
