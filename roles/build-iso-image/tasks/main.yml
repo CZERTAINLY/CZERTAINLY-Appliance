@@ -54,14 +54,8 @@
   ansible.builtin.lineinfile:
     path: "{{ wdir }}/iso/isolinux/gtk.cfg"
     regexp: '^\sappend'
-    line: '	append vga=788 initrd=/install.amd/gtk/initrd.gz --- auto=true preseed/file=/cdrom/preseed.cfg priority=critical quiet splash net.ifnames=0 biosdevname=0 debian-installer/locale=en_US keyboard-configuration/layoutcode=us languagechooser/language-name=English localechooser/supported-locales=en_US.UTF-8 countrychooser/shortlist=CT --'
+    line: '	append vga=788 initrd=/install.amd/gtk/initrd.gz --- auto=true preseed/file=/cdrom/3KeyCompany/preseed.cfg priority=critical quiet splash net.ifnames=0 biosdevname=0 debian-installer/locale=en_US keyboard-configuration/layoutcode=us languagechooser/language-name=English localechooser/supported-locales=en_US.UTF-8 countrychooser/shortlist=CT --'
   register: gtk
-
-- name: copy presed.cfg
-  ansible.builtin.copy:
-    src: preseed.cfg
-    dest: "{{ wdir }}/iso"
-  register: preseed
 
 - name: check for presence of our customized install ISO
   ansible.builtin.stat:
@@ -87,13 +81,15 @@
     dest: "{{ wdir }}/iso/3KeyCompany/{{ item }}"
   loop:
     - czertainly_appliance_version
+    - preseed.cfg
+    - ansible-init.sh
   register: c3k_tfiles
 
 - name: build customized install ISO
   ansible.builtin.command:
     chdir: "{{ wdir }}/iso"
     cmd: genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinstall_iso_name }}" .
-  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or preseed.changed or c3k_files.changed or c3k_tfiles.changed
+  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or c3k_files.changed or c3k_tfiles.changed
   register: build
 
 - name: isohybrid our customized install ISO

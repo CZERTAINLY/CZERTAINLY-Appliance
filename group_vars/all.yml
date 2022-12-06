@@ -1,6 +1,16 @@
 ---
-czertainly_appliance_version: 1.0
-czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly_appliance_version }}.iso
+czertainly:
+  appliance_version: 1.0
+  branding:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-Branding.git
+    branch: develop
+  host_config:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-Host-Config.git
+    branch: develop
+  rke2:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-RKE2.git
+    branch: develop
+czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly.appliance_version }}.iso
 wdir: tmp
 netinst_image:
   name:   debian-11.5.0-amd64-netinst.iso

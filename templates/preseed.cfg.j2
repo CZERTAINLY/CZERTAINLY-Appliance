@@ -66,7 +66,6 @@ d-i preseed/late_command string \
     cp /cdrom/3KeyCompany/inventory.conf /target/etc/ansible/ && \
     cp /cdrom/3KeyCompany/czertainly-branding.yml /target/etc/ansible/playbooks && \
     cp /cdrom/3KeyCompany/czertainly-host-config.yml /target/etc/ansible/playbooks && \
-    in-target git clone https://github.com/semik/CZERTAINLY-Appliance-Branding.git /etc/ansible/roles/branding && \
-    in-target git clone https://github.com/semik/CZERTAINLY-Appliance-Host-Config.git /etc/ansible/roles/host-config && \
-    in-target git clone https://github.com/semik/CZERTAINLY-Appliance-RKE2.git /etc/ansible/roles/rke2 && \
-    in-target ansible-playbook /etc/ansible/playbooks/czertainly-branding.yml
+    cp /cdrom/3KeyCompany/ansible-init.sh /target/etc/ansible/ && \
+    chmod +x /target/etc/ansible/ansible-init.sh && \
+    in-target /etc/ansible/ansible-init.sh
