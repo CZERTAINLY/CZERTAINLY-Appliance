@@ -12,7 +12,7 @@ echo ">> CREATING VBOX MACHINE <<"
 echo ""
 VERSION=`cat tmp/iso/3KeyCompany/czertainly_appliance_version`
 NAME="czertainly-appliance-$VERSION".`date "+%g%m%d.%H%M%S"`
-ISO='tmp/czertainly-appliance-netinstall-1.0.iso'
+ISO="tmp/czertainly-appliance-netinstall-$VERSION.iso"
 MAX_INST_TIME=$[360*60]
 MAX_1ST_TIME=120
 
