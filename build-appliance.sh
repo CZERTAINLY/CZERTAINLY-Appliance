@@ -2,7 +2,7 @@
 
 set -e
 
-# chown -R semik tmp/iso/ ; chmod -R +w tmp/iso/ ; rm -rf tmp/iso ; rm tmp/*.ova
+# chown -R semik tmp/iso/ ; chmod -R +w tmp/iso/ ; rm -rf tmp/*.iso ; rm tmp/*.ova
 
 echo ">> CREATING ISO IMAGE <<"
 ansible-playbook -i inventory.conf build-iso-image.yaml
