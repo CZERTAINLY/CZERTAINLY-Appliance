@@ -4,8 +4,8 @@ set -e
 
 # chown -R semik tmp/iso/ ; chmod -R +w tmp/iso/ ; rm -rf tmp/*.iso ; rm tmp/*.ova
 
-echo ">> CREATING ISO IMAGE <<"
-ansible-playbook -i inventory.conf build-iso-image.yaml
+echo ">> CREATING ISO IMAGE with EXTRA_VARS=$EXTRA_VARS <<"
+ansible-playbook -i inventory.conf $EXTRA_VARS build-iso-image.yaml
 
 echo ""
 echo ">> CREATING VBOX MACHINE <<"

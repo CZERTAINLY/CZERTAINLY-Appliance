@@ -2,14 +2,14 @@
 czertainly:
   appliance_version: 0.5.0
   branding:
-    repo: https://github.com/semik/CZERTAINLY-Appliance-Branding.git
-    branch: develop
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
+    branch: main
   host_config:
-    repo: https://github.com/semik/CZERTAINLY-Appliance-Host-Config.git
-    branch: develop
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config.git
+    branch: main
   rke2:
-    repo: https://github.com/semik/CZERTAINLY-Appliance-RKE2.git
-    branch: develop
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2.git
+    branch: main
 czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly.appliance_version }}.iso
 wdir: tmp
 netinst_image:

@@ -1,0 +1,8 @@
+---
+czertainly:
+  branding:
+    branch: develop
+  host_config:
+    branch: develop
+  rke2:
+    branch: develop

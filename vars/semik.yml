@@ -1,0 +1,11 @@
+---
+czertainly:
+  branding:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-Branding.git
+    branch: develop
+  host_config:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-Host-Config.git
+    branch: develop
+  rke2:
+    repo: https://github.com/semik/CZERTAINLY-Appliance-RKE2.git
+    branch: develop

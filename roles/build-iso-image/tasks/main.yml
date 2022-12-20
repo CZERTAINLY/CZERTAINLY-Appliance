@@ -1,3 +1,6 @@
+- name: debug output of czertinly variable
+  debug: var=czertainly
+
 - name: build working directory
   ansible.builtin.file:
     path: "{{ item }}"
