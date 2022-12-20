@@ -71,13 +71,8 @@ ok: [localhost] => {
 
 ## Notes
 
-For cleaning working directory you can use `rm -rf tmp` or if you are on slow line maybe you would like more [specific command](https://github.com/semik/CZERTAINLY-Appliance/blob/main/build-appliance.sh#L5) which keeps offical Debian ISO image in place to save bandwith
+For cleaning working directory you can use `rm -rf tmp` or if you are on slow line maybe you would like more [specific command](build-appliance.sh#L5) which keeps offical Debian ISO image in place to save bandwith
 
-Debian installation process can be automated by [preseed.cfg file](https://github.com/semik/CZERTAINLY-Appliance/blob/main/files/preseed.cfg) which is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html). Or you can run [network install from minimal ISO](https://www.debian.org/CD/netinst/) and inside of newly installed image run `debconf-get-selections --installer`. And final tip is to try unantend install using VirtualBox, and examine storage of virtual servers, preseed and other needed configs are available there.
-
-TODO nějak zdokumentovat proces bootu virtuálu instalátoru.
-
-`
-
+Debian installation process can be automated by [preseed.cfg](./templates/preseed.cfg.j2) file which is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html). Or you can run [network install from minimal ISO](https://www.debian.org/CD/netinst/) and inside of newly installed image run `debconf-get-selections --installer`. And final tip is to try unantend install using VirtualBox, and examine storage of virtual servers, preseed and other needed configs are available there.
 
 
