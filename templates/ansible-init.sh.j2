@@ -14,4 +14,5 @@ git clone {{ czertainly.rke2.repo }} /etc/ansible/roles/rke2
 cd /etc/ansible/roles/rke2
 git checkout {{ czertainly.rke2.branch }}
 
+ansible-galaxy collection install kubernetes.core
 ansible-playbook /etc/ansible/playbooks/czertainly-branding.yml
