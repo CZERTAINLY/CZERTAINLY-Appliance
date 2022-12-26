@@ -15,7 +15,7 @@ Builder of [CZERTAINLY Appliance](https://docs.czertainly.com/docs/installation-
 In short:
 `apt install git virtualbox virtualbox-ext-pack ansible libarchive-tools genisoimage syslinux-utils`
 
-## Usage
+## Building
 
 ```
 git clone https://github.com/3KeyCompany/CZERTAINLY-Appliance.git
@@ -62,6 +62,23 @@ ok: [localhost] => {
             "repo": "https://github.com/semik/CZERTAINLY-Appliance-RKE2.git"
         }
     }
+
+```
+
+## Usage
+
+```
+$ sudo -i
+cat << EOF > /etc/ansible/group_vars/all.yml
+---
+docker:
+  server: harbor.3key.company
+  email: vmi-int@3key.company
+  secret: regcred
+  username: <username>
+  password: <password>
+EOF
+ansible-playbook /etc/ansible/playbooks/czertainly-host-config.yml
 
 ```
 
