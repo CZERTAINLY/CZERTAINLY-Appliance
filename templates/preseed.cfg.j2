@@ -60,7 +60,8 @@ d-i preseed/late_command string \
     in-target chown -R czertainly.czertainly /home/czertainly/.ssh && \
     cp /cdrom/3KeyCompany/authorized_keys /target/home/czertainly/.ssh && \
     in-target mkdir -p /etc/ansible/playbooks && \
-    in-target mkdir -p /etc/ansible/roles && \
+    in-target mkdir /etc/ansible/roles && \
+    in-target mkdir /etc/ansible/group_vars && \
     cp /cdrom/3KeyCompany/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
     cp /cdrom/3KeyCompany/ansible.cfg /target/etc/ansible/ && \
     cp /cdrom/3KeyCompany/inventory.conf /target/etc/ansible/ && \
