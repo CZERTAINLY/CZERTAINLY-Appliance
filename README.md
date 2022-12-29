@@ -78,13 +78,18 @@ docker:
   username: <username>
   password: <password>
 EOF
+# adjust access credentials to harbor.3key.company
+vim /etc/ansible/group_vars/all.yml
+# exec CZERTAINLY instalation
 ansible-playbook /etc/ansible/playbooks/czertainly-host-config.yml
-
 ```
 
-## Tested compatibility
+## Tested compatibility of resulting OVA
 
-* VMPlayer 16.2.4 / TODO doplnit že je nutný odkliknout nějaký retry
+* VirtualBox 6.1
+* VirtualBox 7.0.4 / working environment
+* VMPlayer 16.2.4 / during import you have to click 'Retry' button to relax OVA specification to VMPlayer accept image
+* VMPlayer 17.0.0 / same as above
 
 ## Notes
 
