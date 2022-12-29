@@ -76,6 +76,7 @@
     - inventory.conf
     - czertainly-branding.yml
     - czertainly-host-config.yml
+    - customize4developer.sh
   register: c3k_files
 
 - name: copy 3KeyCompany templated files

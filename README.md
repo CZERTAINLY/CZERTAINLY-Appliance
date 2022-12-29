@@ -62,8 +62,12 @@ ok: [localhost] => {
             "repo": "https://github.com/semik/CZERTAINLY-Appliance-RKE2.git"
         }
     }
-
 ```
+
+If you need push from running appliance run
+[/etc/ansible/customize4developer.sh](customize4developer.sh) it will
+adjust repos to be pushable and copy .ssh directory from
+czertainlyuser to allow direct access to root account.
 
 ## Usage
 

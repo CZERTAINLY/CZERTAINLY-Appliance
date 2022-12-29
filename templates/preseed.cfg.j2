@@ -68,5 +68,7 @@ d-i preseed/late_command string \
     cp /cdrom/3KeyCompany/czertainly-branding.yml /target/etc/ansible/playbooks && \
     cp /cdrom/3KeyCompany/czertainly-host-config.yml /target/etc/ansible/playbooks && \
     cp /cdrom/3KeyCompany/ansible-init.sh /target/etc/ansible/ && \
+    cp /cdrom/3KeyCompany/customize4developer.sh /target/etc/ansible/ && \
     chmod +x /target/etc/ansible/ansible-init.sh && \
+    chmod +x /target/etc/ansible/customize4developer.sh && \
     in-target /etc/ansible/ansible-init.sh

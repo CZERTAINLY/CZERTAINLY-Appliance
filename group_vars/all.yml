@@ -1,6 +1,6 @@
 ---
 czertainly:
-  appliance_version: 0.5.0
+  appliance_version: 0.5.1
   branding:
     repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
     branch: main
