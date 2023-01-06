@@ -1,0 +1,26 @@
+---
+
+- name: build image
+  hosts: local,localhost
+
+  pre_tasks:
+    - name: set developer to false when not provided on cmd line
+      set_fact: developer=false
+      when: developer is not defined
+      changed_when: false
+
+    - name: load developer specific vars if defined
+      ansible.builtin.include_vars:
+        file: vars/{{ developer }}
+        name: developer_vars
+      when:
+        developer
+
+    - name: combine global vars with developer specific vars
+      ansible.builtin.set_fact:
+        czertainly: "{{ czertainly | combine(developer_vars.czertainly, recursive=True) }}"
+      when:
+        developer_vars is defined
+
+  roles:
+    - build-iso-image

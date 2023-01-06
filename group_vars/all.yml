@@ -1,0 +1,18 @@
+---
+czertainly:
+  appliance_version: 0.5.1
+  branding:
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
+    branch: main
+  host_config:
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config.git
+    branch: main
+  rke2:
+    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2.git
+    branch: main
+czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly.appliance_version }}.iso
+wdir: tmp
+netinst_image:
+  name:   debian-11.6.0-amd64-netinst.iso
+  URL:    https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
+  SHA256: e482910626b30f9a7de9b0cc142c3d4a079fbfa96110083be1d0b473671ce08d

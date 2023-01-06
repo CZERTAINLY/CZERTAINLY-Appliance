@@ -1,0 +1,6 @@
+---
+- name: czertainly host config
+  hosts: all
+  connection: local
+  roles:
+    - host-config

@@ -1,0 +1,102 @@
+- name: debug output of czertinly variable
+  debug: var=czertainly
+
+- name: build working directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ wdir }}"
+    - "{{ wdir }}/iso"
+    - "{{ wdir }}/iso/3KeyCompany"
+
+- name: check for netinst image
+  ansible.builtin.stat:
+    path: "{{ wdir }}/{{ netinst_image.name }}"
+    checksum_algorithm: sha256
+  register: image
+
+- name: download netinst image
+  ansible.builtin.get_url:
+    url: "{{ netinst_image.URL }}/{{ netinst_image.name }}"
+    dest: "{{ wdir }}"
+    checksum: "sha256: {{ netinst_image.SHA256 }}"
+  when: (not image.stat.exists) or (image.stat.checksum != netinst_image.SHA256)
+
+- name: extract netinst image
+  ansible.builtin.command:
+    cmd: bsdtar -C "{{ wdir }}/iso/" -xf "{{ wdir }}/{{ netinst_image.name }}"
+    creates: "{{ wdir }}/iso/autorun.inf"
+
+- name: change permisions of some files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0644'
+  loop:
+    - "{{ wdir }}/iso/isolinux/isolinux.cfg"
+    - "{{ wdir }}/iso/isolinux/gtk.cfg"
+    - "{{ wdir }}/iso/isolinux/isolinux.bin" # writing permisions are required by genisoimage
+
+- name: change permisions of some dirs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0755'
+  loop:
+    - "{{ wdir }}/iso/isolinux"
+
+- name: set timeout in isolinux/isolinux.cfg
+  ansible.builtin.lineinfile:
+    path: "{{ wdir }}/iso/isolinux/isolinux.cfg"
+    regexp: '^timeout'
+     # parser is somehow broken and eats last number, so this means just 2 sec of waiting
+    line: 'timeout 21'
+  register: isolinux
+
+- name: adjust isolinux/gtk.cfg to correctly run autoinstall
+  ansible.builtin.lineinfile:
+    path: "{{ wdir }}/iso/isolinux/gtk.cfg"
+    regexp: '^\sappend'
+    line: '	append vga=788 initrd=/install.amd/gtk/initrd.gz --- auto=true preseed/file=/cdrom/3KeyCompany/preseed.cfg priority=critical quiet splash net.ifnames=0 biosdevname=0 debian-installer/locale=en_US keyboard-configuration/layoutcode=us languagechooser/language-name=English localechooser/supported-locales=en_US.UTF-8 countrychooser/shortlist=CT --'
+  register: gtk
+
+- name: check for presence of our customized install ISO
+  ansible.builtin.stat:
+    path: "{{ wdir }}/{{ czertainly_netinstall_iso_name }}"
+    get_checksum: false
+  register: our_image
+
+- name: copy 3KeyCompany files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ wdir }}/iso/3KeyCompany/"
+  loop:
+    - authorized_keys
+    - ansible.cfg
+    - inventory.conf
+    - czertainly-branding.yml
+    - czertainly-host-config.yml
+    - customize4developer.sh
+  register: c3k_files
+
+- name: copy 3KeyCompany templated files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ wdir }}/iso/3KeyCompany/{{ item }}"
+  loop:
+    - czertainly_appliance_version
+    - preseed.cfg
+    - ansible-init.sh
+  register: c3k_tfiles
+
+- name: build customized install ISO
+  ansible.builtin.command:
+    chdir: "{{ wdir }}/iso"
+    cmd: genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinstall_iso_name }}" .
+  when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or c3k_files.changed or c3k_tfiles.changed
+  register: build
+
+- name: isohybrid our customized install ISO
+  ansible.builtin.command:
+    cmd: isohybrid "{{ wdir }}/{{ czertainly_netinstall_iso_name }}"
+  when: build.changed
