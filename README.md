@@ -39,7 +39,8 @@ at that moment you wont be able to enter ssh password or use ssh key.
 
 Call builder:
 ```
-EXTRA_VARS='-e developer=YOUR-COPY-OF-SEMIK.YML' EXTRA_VARS='-e developer=semik.yml' ./build-appliance.sh
+export EXTRA_VARS='-e developer=YOUR-COPY-OF-SEMIK.YML'
+./build-appliance.sh
 ```
 
 At begining of playbook output you should see paths for your repo:
