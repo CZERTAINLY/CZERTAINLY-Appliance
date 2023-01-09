@@ -31,6 +31,7 @@ Make forks of offical repositories, you need:
   - [CZERTAINLY-Appliance-Branding](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding)
   - [CZERTAINLY-Appliance-Host-Config](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config)
   - [CZERTAINLY-Appliance-RKE2](https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2)
+  - [ansible-role-czertainly](https://github.com/3KeyCompany/ansible-role-czertainly)
 
 Make copy of vars/semik.yml and adjust paths to your forks of
 repos. Do not use SSH access method, repos are being cloned during
