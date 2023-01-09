@@ -1,6 +1,6 @@
 ---
 czertainly:
-  appliance_version: 0.5.1
+  appliance_version: 0.5.2
   branding:
     repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
     branch: main
@@ -9,6 +9,9 @@ czertainly:
     branch: main
   rke2:
     repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2.git
+    branch: main
+  czertainly:
+    repo: https://github.com/3KeyCompany/ansible-czertainly-role.git
     branch: main
 czertainly_netinstall_iso_name: czertainly-appliance-netinstall-{{ czertainly.appliance_version }}.iso
 wdir: tmp
