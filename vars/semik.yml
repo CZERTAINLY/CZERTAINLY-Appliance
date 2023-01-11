@@ -5,7 +5,10 @@ czertainly:
     branch: develop
   host_config:
     repo: https://github.com/semik/CZERTAINLY-Appliance-Host-Config.git
-    branch: develop
+    branch: http_proxy
   rke2:
     repo: https://github.com/semik/CZERTAINLY-Appliance-RKE2.git
-    branch: develop
+    branch: http_proxy
+  czertainly:
+    repo: https://github.com/semik/ansible-role-czertainly.git
+    branch: http_proxy

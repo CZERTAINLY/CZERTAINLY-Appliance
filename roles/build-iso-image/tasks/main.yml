@@ -75,7 +75,7 @@
     - ansible.cfg
     - inventory.conf
     - czertainly-branding.yml
-    - czertainly-host-config.yml
+    - czertainly.yml
     - customize4developer.sh
   register: c3k_files
 
