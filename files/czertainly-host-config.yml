@@ -3,4 +3,6 @@
   hosts: all
   connection: local
   roles:
-    - host-config
+    - role: host-config
+    - role: rke2
+    - role: czertainly
