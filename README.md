@@ -87,13 +87,13 @@ EOF
 # adjust access credentials to harbor.3key.company
 vim /etc/ansible/group_vars/all.yml
 # exec CZERTAINLY instalation
-ansible-playbook /etc/ansible/playbooks/czertainly-host-config.yml
+ansible-playbook /etc/ansible/playbooks/czertainly.yml
 ```
 
 All roles have tags. You can run only parts you need to re-run to save your time. For example, when you want just reinstall czeratinly you can do:
 ```
 kubectl delete ns czertainly
-ansible-playbook /etc/ansible/playbooks/czertainly-host-config.yml --tags czertainly --skip-tags czertainly_sleep15
+ansible-playbook /etc/ansible/playbooks/czertainly.yml --tags czertainly --skip-tags czertainly_sleep10
 ```
 
 ## Tested compatibility of resulting OVA
