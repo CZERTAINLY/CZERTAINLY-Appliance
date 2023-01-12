@@ -6,3 +6,5 @@ czertainly:
     branch: develop
   rke2:
     branch: develop
+  czertainly:
+    branch: develop
