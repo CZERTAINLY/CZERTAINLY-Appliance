@@ -1,5 +1,6 @@
 *~
 tmp/
+vars/semik.yml
 
 HELP.md
 target/
