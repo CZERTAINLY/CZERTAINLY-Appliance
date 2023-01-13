@@ -24,7 +24,9 @@ cd CZERTAINLY-Appliance
 ```
 Finished apliance is exported into file `tmp/czertainly-appliance-$APPLIANCEVERSION."%g%m%d.%H%M%S.ova`. The proces takes about 7 minutes on i7-6700 CPU @ 3.40GHz.
 
-## Usage
+## Usage of the Appliance
+
+Start virtual machine, login as `czertainly` user with password `newgenerationtrustcare` and exec:
 
 ```
 $ sudo -i
