@@ -2,21 +2,21 @@
 
 set -e
 
-git clone {{ czertainly.branding.repo }} /etc/ansible/roles/branding
+git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
-git checkout {{ czertainly.branding.branch }}
+git checkout {{ ansible_roles.branding.branch }}
 
-git clone {{ czertainly.host_config.repo }} /etc/ansible/roles/host-config
+git clone {{ ansible_roles.host_config.repo }} /etc/ansible/roles/host-config
 cd /etc/ansible/roles/host-config
-git checkout {{ czertainly.host_config.branch }}
+git checkout {{ ansible_roles.host_config.branch }}
 
-git clone {{ czertainly.rke2.repo }} /etc/ansible/roles/rke2
+git clone {{ ansible_roles.rke2.repo }} /etc/ansible/roles/rke2
 cd /etc/ansible/roles/rke2
-git checkout {{ czertainly.rke2.branch }}
+git checkout {{ ansible_roles.rke2.branch }}
 
-git clone {{ czertainly.czertainly.repo }} /etc/ansible/roles/czertainly
+git clone {{ ansible_roles.czertainly.repo }} /etc/ansible/roles/czertainly
 cd /etc/ansible/roles/czertainly
-git checkout {{ czertainly.czertainly.branch }}
+git checkout {{ ansible_roles.czertainly.branch }}
 
 # during installation is $HOME variable set to / so ansible-galaxy
 # installs into /
