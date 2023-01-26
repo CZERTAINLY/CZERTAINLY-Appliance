@@ -38,6 +38,10 @@ docker:
   secret: regcred
   username: <username>
   password: <password>
+#postgres:
+#  username: czertainlyuser
+#  password: your-strong-password
+#  database: czertainlydb
 EOF
 # adjust access credentials to harbor.3key.company
 vim /etc/ansible/group_vars/all.yml
