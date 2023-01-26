@@ -18,7 +18,7 @@
   ansible.builtin.get_url:
     url: "{{ debian_netinst_image.URL }}/{{ debian_netinst_image.name }}"
     dest: "{{ wdir }}"
-    checksum: "sha256: {{ netinst_image.SHA256 }}"
+    checksum: "sha256: {{ debian_netinst_image.SHA256 }}"
   when: (not image.stat.exists) or (image.stat.checksum != debian_netinst_image.SHA256)
 
 - name: extract netinst image
