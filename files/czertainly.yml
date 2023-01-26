@@ -14,7 +14,7 @@
       HTTPS_PROXY: "{{ proxy.https | default('') }}"
       FTP_PROXY: "{{ proxy.ftp | default('') }}"
       FTPS_PROXY: "{{ proxy.ftps | default('') }}"
-      NO_PROXY: "{{ proxy.dont_use_for | join(',') | default('') }}"
+      NO_PROXY: "{{ proxy.dont_use_for | default('') | join(',') }}"
 
   # Now we filterout those dict keys which have environment valuables
   # which have value equal to ''. This and previous block is need to
