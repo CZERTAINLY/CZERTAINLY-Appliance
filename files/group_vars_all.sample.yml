@@ -1,0 +1,34 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+# Some parts of CZERTAINLY are provided via a private repository, see:
+# https://docs.czertainly.com/docs/current-versions/#private-repository
+# for more details. You should specify the account you received for
+# accessing that repository.
+docker:
+  server: harbor.3key.company
+  email: vmi-int@3key.company
+  secret: regcred
+  username: <username>
+  password: <password>
+
+# Default parameters for PostgreSQL database are hardcoded. You don't
+# need to specify them explicitly. If you need to adjust the password,
+# you must also uncomment the 'postreges' key!
+#
+# postgres:
+#   username: czertainlyuser
+#   password: your-strong-password
+#   database: czertainlydb
+
+# If you are installing in a restricted network, you might need to
+# specify an HTTP proxy. CZERTAINLY only requires http_proxy and
+# https_proxy, but other system utilities might also need ftp.
+#
+# proxy:
+#   http:  http://192.168.1.184:3128
+#   https: http://192.168.1.184:3128
+#   ftp:   http://192.168.1.184:3128
+#   ftps:  http://192.168.1.184:3128
+#   dont_use_for:
+#     - host1.example.com
+#     - host2.example.com

@@ -74,6 +74,7 @@
     - czertainly-branding.yml
     - czertainly.yml
     - customize4developer.sh
+    - group_vars_all.sample.yml
   register: c3k_files
 
 - name: copy 3KeyCompany templated files
