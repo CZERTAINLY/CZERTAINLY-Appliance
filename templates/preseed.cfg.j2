@@ -70,6 +70,7 @@ d-i preseed/late_command string \
     cp /cdrom/3KeyCompany/ansible-init.sh /target/etc/ansible/ && \
     cp /cdrom/3KeyCompany/customize4developer.sh /target/etc/ansible/ && \
     cp /cdrom/3KeyCompany/group_vars_all.sample.yml /target/etc/ansible/group_vars/all.yml && \
+    cp /cdrom/3KeyCompany/suders.d.czertainly /target/etc/sudoers.d/czertainly && \
     chmod +x /target/etc/ansible/ansible-init.sh && \
     chmod +x /target/etc/ansible/customize4developer.sh && \
     in-target /etc/ansible/ansible-init.sh
