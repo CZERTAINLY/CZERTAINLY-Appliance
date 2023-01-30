@@ -1,5 +1,5 @@
 ---
-appliance_version: 0.5.4
+appliance_version: 0.5.5
 ansible_roles:
   branding:
     repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git

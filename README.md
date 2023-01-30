@@ -30,19 +30,6 @@ Start virtual machine, login as `czertainly` user with password `newgenerationtr
 
 ```
 $ sudo -i
-cat << EOF > /etc/ansible/group_vars/all.yml
----
-docker:
-  server: harbor.3key.company
-  email: vmi-int@3key.company
-  secret: regcred
-  username: <username>
-  password: <password>
-#postgres:
-#  username: czertainlyuser
-#  password: your-strong-password
-#  database: czertainlydb
-EOF
 # adjust access credentials to harbor.3key.company
 vim /etc/ansible/group_vars/all.yml
 # exec CZERTAINLY instalation
