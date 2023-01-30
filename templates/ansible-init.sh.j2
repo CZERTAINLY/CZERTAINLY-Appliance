@@ -2,6 +2,10 @@
 
 set -e
 
+mkdir -p /etc/ansible/vars
+chgrp adm /etc/ansible/vars
+chmod g+ws /etc/ansible/vars
+
 git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
 git checkout {{ ansible_roles.branding.branch }}
