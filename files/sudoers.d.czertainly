@@ -1,6 +1,4 @@
-czertainly ALL = NOPASSWD: /usr/bin/id ""
-czertainly ALL = NOPASSWD: /usr/bin/dmesg ""
-czeratinly ALL = NOPASSWD: /usr/sbin/reboot
-czertainly ALL = NOPASSWD: /usr/sbin/shutdown -h now
+czeratinly ALL = NOPASSWD: /usr/bin/systemctl reboot
+czertainly ALL = NOPASSWD: /usr/bin/systemctl halt
 czertainly ALL = NOPASSWD: /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml
 czertainly ALL = NOPASSWD: /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml --diff

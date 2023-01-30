@@ -75,7 +75,7 @@
     - czertainly.yml
     - customize4developer.sh
     - group_vars_all.sample.yml
-    - suders.d.czertainly
+    - sudoers.d.czertainly
   register: c3k_files
 
 - name: copy 3KeyCompany templated files
