@@ -2,3 +2,4 @@ czertainly ALL = NOPASSWD: /sbin/shutdown -r now
 czertainly ALL = NOPASSWD: /sbin/shutdown -h now
 czertainly ALL = NOPASSWD: /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml
 czertainly ALL = NOPASSWD: /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml --diff
+czertainly ALL = NOPASSWD: /usr/local/bin/rke2-uninstall.sh
