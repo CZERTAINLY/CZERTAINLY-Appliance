@@ -37,7 +37,7 @@ advancedMenu=(
 #    'installRKE2'        "Install only RKE2 - Rancher\'s next-generation Kubernetes distribution"
 #    'verifyRKE2'         'Verify kubernetes',
 #    'installC'           'Install only CZERTAINLY'
-#    'removeC'            'Remove CZERTAINLY'
+    'removeC'            'Remove CZERTAINLY'
     'remove'             'Remove RKE2 & CZERTAINLY'
     'shell'              'Enter system shell'
     'reboot'             'Reboot system'
@@ -48,6 +48,9 @@ proxySettings='/etc/ansible/vars/proxy.yml'
 dockerSettings='/etc/ansible/vars/docker.yml'
 databaseSettings='/etc/ansible/vars/database.yml'
 rkeUninstall='/usr/local/bin/rke2-uninstall.sh'
+kubectl='/var/lib/rancher/rke2/bin/kubectl'
+
+maxRemoveWait=360
 
 tmpF=`mktemp /tmp/czertainly-manager.XXXXXX`
 #trap "rm $tmpF 2>/dev/null" 0 1 2 5 15
@@ -111,10 +114,66 @@ removeALL() {
 	logger "$p: calling $rkeUninstall"
 	sudo $rkeUninstall
 	echo ""
-	echo "RKE & CZERTAINLY removed, press enter key to return to menu"
+	echo "RKE2 & CZERTAINLY removed, press enter key to return to menu"
 	read
     else
-	echo "RKE not present ($rkeUninstall), press enter key to return to menu"
+	echo "RKE2 not present ($rkeUninstall), press enter key to return to menu"
+	read
+    fi
+}
+
+removeCZERTAINLY() {
+    p=$FUNCNAME
+
+    clear -x
+    if [ -e $kubectl ]
+    then
+	cmd="$kubectl delete ns czertainly"
+	logger "$p: calling $cmd"
+	sudo $cmd
+	echo ""
+	echo "CZERTAINLY removed. Waiting for kubernetes to complete cleaning."
+
+	sudo /usr/bin/rm /root/install/docker-secret.yaml
+	sudo /usr/bin/rm /root/install/czertainly-values.yaml
+	sudo /usr/bin/rm /root/install/czertainly-values.local.yaml
+
+	cleaned=0
+	start=`date "+%s"`
+	while true
+	do
+	    if `sudo $kubectl -n czertainly get all 2>&1 | grep 'No resources found' >/dev/null 2>&1`
+	    then
+		cleaned=0
+		logger "$p: czertainly name space deleted"
+		echo "DONE"
+		break
+	    else
+		diff=$[`date "+%s"`-$start]
+		if [ $diff -gt $maxRemoveWait ]
+		then
+		    msg="waiting take to long!"
+		    logger "$p: $msg"
+		    echo "$msg"
+		    echo ""
+		    sudo $kubectl -n czertainly get all
+		    echo ""
+		    echo "Kubernetes failled to remove czertaily namespace."
+		    break
+		else
+		    logger "$p: waiting ${diff}s ..."
+		    echo "waiting ${diff}s ..."
+		    sleep 10
+		fi
+	    fi
+	done
+	echo ""
+	echo "Press enter key to return to menu."
+	read
+    else
+	echo "$kubectl is missing. Is RKE2 installed?"
+	echo ""
+	echo "Press enter key to return to menu."
 	read
     fi
 }
@@ -157,6 +216,15 @@ advanced() {
 	    then
 		logger "$p: complete remove confirmed"
 		removeALL
+	    else
+		logger "$p: complete remove canceled"
+	    fi
+	    ;;
+	'removeC')
+	    if confirm "Remove CZERTAINLY installation? Database will remain untouched."
+	    then
+		logger "$p: complete remove confirmed"
+		removeCZERTAINLY
 	    else
 		logger "$p: complete remove canceled"
 	    fi
