@@ -102,7 +102,7 @@ confirm() {
     fi
 }
 
-remove() {
+removeALL() {
     p=$FUNCNAME
 
     clear -x
@@ -156,7 +156,7 @@ advanced() {
 	    if confirm "Remove RKE2 (kubernetes) including CZERTAINLY? Database will remain untouched."
 	    then
 		logger "$p: complete remove confirmed"
-		remove
+		removeALL
 	    else
 		logger "$p: complete remove canceled"
 	    fi
