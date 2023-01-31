@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # inspiration from: https://linuxcommand.org/lc3_adv_dialog.php
+#                   https://www.foxinfotech.in/2019/04/linux-dialog-examples.html
+
+
 # Define the dialog exit status codes
 : ${DIALOG_OK=0}
 : ${DIALOG_CANCEL=1}
@@ -15,13 +18,14 @@ then
     applianceVersion=`cat /etc/czertainly_appliance_version`
 fi
 applianceIP=`ip address show dev eth0 | grep -w inet | awk '{print $2}' | sed "s/\/.*//"`
-
+umask 002
 
 backTitle="CZERTAINLY Appliance ($applianceVersion; $applianceIP)"
 mainMenu=(
 #    'hostname'     "Configure hostname"
-    'network'      "Configure HTTP proxy"
-#    'certificates' "Configure custom certificates"
+    "network"      "Configure HTTP proxy"
+    'ingressTLS'   "Configure ingress TLS certificates"
+#    'trustedCA'    "Configure custom trusted certificates"
     'database'     "Configure database"
     '3keyRepo'     "Configure 3Key.Company Docker repository access credentials"
     'install'      "Install CZERTAINLY"
@@ -47,6 +51,7 @@ advancedMenu=(
 proxySettings='/etc/ansible/vars/proxy.yml'
 dockerSettings='/etc/ansible/vars/docker.yml'
 databaseSettings='/etc/ansible/vars/database.yml'
+ingressSettings='/etc/ansible/vars/ingress.yml'
 rkeUninstall='/usr/local/bin/rke2-uninstall.sh'
 kubectl='/var/lib/rancher/rke2/bin/kubectl'
 
@@ -89,6 +94,10 @@ max_menu_rows() {
 
 allParametersRequired() {
     dialog --backtitle "$backTitleCentered" --title 'Error[!]' --msgbox "All parameters are required." 10 50
+}
+
+errorMessage() {
+    dialog --backtitle "$backTitleCentered" --title 'Error[!]' --msgbox "$1" 10 50
 }
 
 confirm() {
@@ -401,6 +410,117 @@ postgres:" > $newSettings
     }
 }
 
+testCertificateKey() {
+    cert=$1
+    key=$2
+    local p=$FUNCNAME
+
+    if [ ! -e $cert ]
+    then
+	emsg="$cert doesn't exists"
+	logger "$p: $emsg"
+	echo $emsg
+	return 1
+    fi
+
+    if [ ! -e $key ]
+    then
+	emsg="$key doesn't exists"
+	logger "$p: $emsg"
+	echo $emsg
+	return 1
+    fi
+
+    if ! key_modulus=`openssl rsa -noout -modulus -in $key`
+    then
+	emsg="unable to get modulus of private key in $key"
+	logger "$p: $emsg"
+	echo $emsg
+	return 1
+    fi
+
+    # with certificate it is more complicated, there might be more
+    # than one folowing awk block prints modulus of all of them
+    if awk -v cmd='openssl x509 -noout -modulus' '/BEGIN/{close(cmd)}; {print | cmd}' < $cert | grep "$key_modulus" > /dev/null
+    then
+	logger "$p: match"
+	# modulus of the key found in modulus of certs in $cert
+	return 0
+    fi
+
+    emsg="private key doesn't match provided certificate"
+    logger "$p: $emsg"
+    echo $emsg
+    return 1
+}
+
+ingressTLS() {
+    maxLen=120
+    maxInputLen=$[$eCOLS-20]
+    p=$FUNCNAME
+    settings=$ingressSettings
+
+    certificate=`grep < $settings '^ *certificate_file: ' | sed "s/^ *certificate_file: *//"`
+    private_key=`grep < $settings '^ *private_key_file: ' | sed "s/^ *private_key_file: *//"`
+
+    logger "$p: $settings";
+
+    dialog --backtitle "$backTitleCentered" --title " TLS certificate " \
+	   --form "Certificate & unencrypted private key for incoming HTTPS" 10 $eCOLS 3 \
+	   "certificate:"  1 1 "$certificate" 1 14 $maxInputLen $maxLen \
+	   "private key:"  2 1 "$private_key" 2 14 $maxInputLen $maxLen \
+	   2>$tmpF
+    # get dialog's exit status
+    return_value=$?
+
+    if [ $return_value != $DIALOG_OK ]
+    then
+	logger "$p: dialog not OK => returing without any change"
+	return 1
+    fi
+
+    cat $tmpF | sed "s/ //gm" | {
+	read -r _certificate
+	read -r _private_key
+
+	lines=`cat $tmpF | sed "s/ //gm" | grep -v '^$' | wc -l`
+
+	logger "$p: certificate  '$certificate' => '$_certificate'"
+	logger "$p: private_key  '$private_key' => '$_private_key'"
+
+	newSettings=`mktemp /tmp/czertainly-manager.ingress.XXXXXX`
+
+	if [ "$_certificate" != '' ] && [ "$_private_key" != '' ]
+	then
+	    if testRes=$(testCertificateKey "$_certificate" "$_private_key")
+	    then
+		echo "---
+ingress:
+  certificate_file: $_certificate
+  private_key_file: $_private_key
+" >> $newSettings
+
+		if `diff $newSettings $settings >/dev/null 2>&1`
+		then
+		    logger "$p: nothing changed"
+		    rm $newSettings
+		else
+		    cp $newSettings $settings
+		    rm $newSettings
+		    logger "$p: settings changed $settings rewritten"
+		fi
+	    else
+		# testCertificateNotOK
+		logger "$p: test not OK $testRes";
+		errorMessage "$testRes"
+	    fi
+	else
+	    logger "$p: all parameters are empty - zeroizing $settings"
+	    cp /dev/null $settings
+	fi
+    }
+}
+
 docker() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
@@ -540,6 +660,9 @@ main() {
 	    ;;
 	'3keyRepo')
 	    docker
+	    ;;
+	'ingressTLS')
+	    ingressTLS
 	    ;;
 	'install')
 	    execAnsible \
