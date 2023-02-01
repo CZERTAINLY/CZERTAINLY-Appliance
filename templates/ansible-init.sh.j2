@@ -4,17 +4,18 @@ set -e
 
 mkdir -p /etc/ansible/vars
 chgrp -R adm /etc/ansible/vars
-chmod -R +wg+ws /etc/ansible/vars
-chmod g+ws /etc/ansible/vars
+chmod -R +w,g+w /etc/ansible/vars
+chmod g+s /etc/ansible/vars
 
 chmod +x /usr/local/bin/customize4developer.sh
 chmod +x /usr/local/bin/czertainly-tui.sh
 
 chmod 0440 /etc/sudoers.d/czertainly
 
-# there is no support for custom shell in preseed.cfg
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=866328
-usermod -s /usr/local/bin/czertainly-tui.sh czertainly
+# We need SCP so we can't change shell. File .bashrc is used only in
+# interactive mode.
+echo "
+/usr/local/bin/czertainly-tui.sh" >> /home/czertainly/.bashrc
 
 git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
