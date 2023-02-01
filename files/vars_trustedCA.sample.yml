@@ -1,0 +1,3 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+#trustedCA_file: /home/czertainly/trustedCA.pem

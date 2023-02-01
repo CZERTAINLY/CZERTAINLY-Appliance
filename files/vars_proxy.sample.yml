@@ -1,0 +1,14 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+# If you are installing in a restricted network, you might need to
+# specify an HTTP proxy. CZERTAINLY only requires http_proxy and
+# https_proxy, but other system utilities might also need ftp.
+#
+# proxy:
+#   http:  http://192.168.1.184:3128
+#   https: http://192.168.1.184:3128
+#   ftp:   http://192.168.1.184:3128
+#   ftps:  http://192.168.1.184:3128
+#   dont_use_for:
+#     - host1.example.com
+#     - host2.example.com

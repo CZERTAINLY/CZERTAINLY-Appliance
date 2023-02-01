@@ -1,0 +1,12 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+# Some parts of CZERTAINLY are provided via a private repository, see:
+# https://docs.czertainly.com/docs/current-versions/#private-repository
+# for more details. You should specify the account you received for
+# accessing that repository.
+docker:
+  server: harbor.3key.company
+  email: vmi-int@3key.company
+  secret: regcred
+  username: <username>
+  password: <password>

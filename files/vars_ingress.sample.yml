@@ -1,0 +1,5 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+#ingress:
+#  certificate_file: /home/czertainly/czertainly.crt
+#  private_key_file: /home/czertainly/czertainly.key
