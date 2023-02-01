@@ -620,7 +620,7 @@ trustedCA_file: $_trustedCA
 
 docker() {
     maxLen=120
-    maxInputLen=$[$eCOLS-20]
+    maxInputLen=$[$eCOLS-20-7]
     p=$FUNCNAME
     settings=$dockerSettings
 
@@ -629,12 +629,14 @@ docker() {
     server=`grep < $settings '^ *server: ' | sed "s/^ *server: *//"`
     secret=`grep < $settings '^ *secret: ' | sed "s/^ *secret: *//"`
     email=`grep < $settings '^ *email: ' | sed "s/^ *email: *//"`
+    version=`grep < $settings '^ *helm_chart_version: ' | sed "s/^ *helm_chart_version: *//"`
 
     dialog --backtitle "$backTitleCentered" --title " docker repository " \
-	   --form "Parameters of Docker image repository" 10 $eCOLS 3 \
-	   "server:"    1 3 "$server"   1 14 $maxInputLen $maxLen \
-	   "username:"  2 1 "$username" 2 14 $maxInputLen $maxLen \
-	   "password:"  3 1 "$password" 3 14 $maxInputLen $maxLen \
+	   --form "Parameters of Docker image repository" 10 $eCOLS 4 \
+	   "server:"               1 3 "$server"   1 21 $maxInputLen $maxLen \
+	   "CZERTAINLY version:"   2 1 "$version"  2 21 $maxInputLen $maxLen \
+	   "username:"             3 1 "$username" 3 21 $maxInputLen $maxLen \
+	   "password:"             4 1 "$password" 4 21 $maxInputLen $maxLen \
 	   2>$tmpF
     # get dialog's exit status
     return_value=$?
@@ -647,6 +649,7 @@ docker() {
 
     cat $tmpF | sed "s/ //gm" | {
 	read -r _server
+	read -r _version
 	read -r _username
 	read -r _password
 
@@ -655,14 +658,16 @@ docker() {
 	logger "$p: username  '$username' => '$_username'"
 	logger "$p: password  '$password' => '$_password'"
 	logger "$p: server    '$server' => '$_server'"
+	logger "$p: version   '$version' => '$_version'"
 
 	newSettings=`mktemp /tmp/czertainly-manager.docker.XXXXXX`
 
-	if [ $lines -eq 3 ]
+	if [ $lines -eq 4 ]
 	then
 	    echo "---
 docker:
   server: $_server
+  helm_chart_version: $_version
   email: $email
   secret: $secret
   username: $_username
