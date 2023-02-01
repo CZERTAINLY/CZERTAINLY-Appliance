@@ -633,10 +633,10 @@ docker() {
 
     dialog --backtitle "$backTitleCentered" --title " docker repository " \
 	   --form "Parameters of Docker image repository" 10 $eCOLS 4 \
-	   "server:"               1 3 "$server"   1 21 $maxInputLen $maxLen \
-	   "CZERTAINLY version:"   2 1 "$version"  2 21 $maxInputLen $maxLen \
-	   "username:"             3 1 "$username" 3 21 $maxInputLen $maxLen \
-	   "password:"             4 1 "$password" 4 21 $maxInputLen $maxLen \
+	   "server:"               1 13 "$server"   1 21 $maxInputLen $maxLen \
+	   "CZERTAINLY version:"   2  1 "$version"  2 21 $maxInputLen $maxLen \
+	   "username:"             3 11 "$username" 3 21 $maxInputLen $maxLen \
+	   "password:"             4 11 "$password" 4 21 $maxInputLen $maxLen \
 	   2>$tmpF
     # get dialog's exit status
     return_value=$?
