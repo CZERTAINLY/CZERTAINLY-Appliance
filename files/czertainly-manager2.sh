@@ -25,7 +25,7 @@ mainMenu=(
 #    'hostname'     "Configure hostname"
     "network"      "Configure HTTP proxy"
     'ingressTLS'   "Configure ingress TLS certificates"
-#    'trustedCA'    "Configure custom trusted certificates"
+    'trustedCA'    "Configure custom trusted certificates"
     'database'     "Configure database"
     '3keyRepo'     "Configure 3Key.Company Docker repository access credentials"
     'install'      "Install CZERTAINLY"
@@ -52,6 +52,7 @@ proxySettings='/etc/ansible/vars/proxy.yml'
 dockerSettings='/etc/ansible/vars/docker.yml'
 databaseSettings='/etc/ansible/vars/database.yml'
 ingressSettings='/etc/ansible/vars/ingress.yml'
+trustedCASettings='/etc/ansible/vars/trustedCA.yml'
 rkeUninstall='/usr/local/bin/rke2-uninstall.sh'
 kubectl='/var/lib/rancher/rke2/bin/kubectl'
 
@@ -98,6 +99,13 @@ allParametersRequired() {
 
 errorMessage() {
     dialog --backtitle "$backTitleCentered" --title 'Error[!]' --msgbox "$1" 10 50
+}
+
+infoText() {
+    temp=`mktemp /tmp/czertainly-manager.textbox.XXXXXX`
+    echo "$1" > $temp
+    dialog --backtitle "$backTitleCentered" --title 'Info' --textbox "$temp" $eRows $eCOLS
+    rm $temp
 }
 
 confirm() {
@@ -521,6 +529,95 @@ ingress:
     }
 }
 
+testTrustedCAfile() {
+    certs=$1
+    local p=$FUNCNAME
+
+    logger "$p: $certs";
+
+    if [ ! -e $certs ]
+    then
+	emsg="unable to read $certs"
+	logger "$p: $emsg"
+	echo $emsg
+	return 1
+    fi
+
+    cnt=`awk -v cmd='openssl x509 -noout -subject ' '/BEGIN/{close(cmd)}; {print | cmd}' < $certs | wc -l`
+
+    if [ $cnt -gt 0 ]
+    then
+	logger "$p: found more than 0 certs ($cnt)"
+	return 0
+    fi
+
+    emsg="unable to parse $certs";
+    logger "$p: $emsg"
+    echo $emsg
+    return 1
+}
+
+trustedCA() {
+    maxLen=120
+    maxInputLen=$[$eCOLS-20]
+    p=$FUNCNAME
+    settings=$trustedCASettings
+
+    trustedCA=`grep < $settings '^ *trustedCA_file: ' | sed "s/^ *trustedCA_file: *//"`
+
+    logger "$p: $trustedCA";
+    logger "$p: $settings";
+
+    dialog --backtitle "$backTitleCentered" --title " Trusted CAs " \
+	   --form "Provide path to file with aditional trusted certificates" 10 $eCOLS 3 \
+	   "trustedCAs:"  1 1 "$trustedCA" 1 14 $maxInputLen $maxLen \
+	   2>$tmpF
+    # get dialog's exit status
+    return_value=$?
+
+    if [ $return_value != $DIALOG_OK ]
+    then
+	logger "$p: dialog not OK => returing without any change"
+	return 1
+    fi
+
+    cat $tmpF | sed "s/ //gm" | {
+	read -r _trustedCA
+
+	lines=`cat $tmpF | sed "s/ //gm" | grep -v '^$' | wc -l`
+
+	logger "$p: trustedCA '$trustedCA' => '$_trustedCA'"
+
+	newSettings=`mktemp /tmp/czertainly-manager.trustedCA.XXXXXX`
+
+	if [ "$_trustedCA" != '' ]
+	then
+	    if testRes=$(testTrustedCAfile "$_trustedCA")
+	    then
+		echo "---
+trustedCA_file: $_trustedCA
+" >> $newSettings
+
+		if `diff $newSettings $settings >/dev/null 2>&1`
+		then
+		    logger "$p: nothing changed"
+		    rm $newSettings
+		else
+		    cp $newSettings $settings && rm $newSettings
+		    logger "$p: settings changed $settings rewritten"
+		fi
+	    else
+		# testCertificateNotOK
+		logger "$p: test not OK $testRes";
+		errorMessage "$testRes"
+	    fi
+	else
+	    logger "$p: THE ONLY ONE parameter IS empty - zeroizing $settings"
+	    cp /dev/null $settings
+	fi
+    }
+}
+
 docker() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
@@ -663,6 +760,9 @@ main() {
 	    ;;
 	'ingressTLS')
 	    ingressTLS
+	    ;;
+	'trustedCA')
+	    trustedCA
 	    ;;
 	'install')
 	    execAnsible \
