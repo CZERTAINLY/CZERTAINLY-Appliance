@@ -15,7 +15,7 @@ chmod 0440 /etc/sudoers.d/czertainly
 # We need SCP so we can't change shell. File .bashrc is used only in
 # interactive mode.
 echo "
-/usr/local/bin/czertainly-tui.sh" >> /home/czertainly/.bashrc
+while true; do /usr/local/bin/czertainly-tui.sh; sleep 1; done" >> /home/czertainly/.bashrc
 
 git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
