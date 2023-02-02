@@ -824,9 +824,15 @@ main() {
 	    trustedCA
 	    ;;
 	'install')
-	    execAnsible \
-		"sudo /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml" \
-		"full-install"
+	    if confirm "Have you set up access credentials to harbor.3key.company and possibly adjusted other options? Please confirm installation by selecting Yes button. Complete installation takes about 10 minutes."
+	    then
+		logger "$p: install confirmed"
+		execAnsible \
+		    "sudo /usr/bin/ansible-playbook /etc/ansible/playbooks/czertainly.yml" \
+		    "full-install"
+	    else
+		logger "$p: install canceled"
+	    fi
 	    ;;
 	'advanced')
 	    logger "main_menu: advanced";
