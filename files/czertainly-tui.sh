@@ -20,9 +20,11 @@ fi
 applianceIP=`ip address show dev eth0 | grep -w inet | awk '{print $2}' | sed "s/\/.*//"`
 umask 002
 
+export CZERTAINLY_TUI="ACTIVE"
+
 backTitle="CZERTAINLY Appliance ($applianceVersion; $applianceIP)"
 mainMenu=(
-#    'hostname'     "Configure hostname"
+    'hostname'     "Configure hostname"
     "network"      "Configure HTTP proxy"
     'ingressTLS'   "Configure ingress TLS certificates"
     'trustedCA'    "Configure custom trusted certificates"
@@ -99,6 +101,10 @@ allParametersRequired() {
 
 errorMessage() {
     dialog --backtitle "$backTitleCentered" --title 'Error[!]' --msgbox "$1" 10 50
+}
+
+infoMessage() {
+    dialog --backtitle "$backTitleCentered" --title 'Info[!]' --msgbox "$1" 10 50
 }
 
 infoText() {
@@ -565,9 +571,6 @@ trustedCA() {
 
     trustedCA=`grep < $settings '^ *trustedCA_file: ' | sed "s/^ *trustedCA_file: *//"`
 
-    logger "$p: $trustedCA";
-    logger "$p: $settings";
-
     dialog --backtitle "$backTitleCentered" --title " Trusted CAs " \
 	   --form "Provide path to file with aditional trusted certificates" 10 $eCOLS 3 \
 	   "trustedCAs:"  1 1 "$trustedCA" 1 14 $maxInputLen $maxLen \
@@ -614,6 +617,55 @@ trustedCA_file: $_trustedCA
 	else
 	    logger "$p: THE ONLY ONE parameter IS empty - zeroizing $settings"
 	    cp /dev/null $settings
+	fi
+    }
+}
+
+changeHostname() {
+    # https://wiki.debian.org/Hostname
+    maxLen=120
+    maxInputLen=$[$eCOLS-8]
+    p=$FUNCNAME
+
+    hostname=`hostname -f`
+
+    dialog --backtitle "$backTitleCentered" --title " System hostname " \
+	   --form "Provide fully qualifiled hostname" 10 $eCOLS 3 \
+	   ""  1 1 "$hostname" 1 2 $maxInputLen $maxLen \
+	   2>$tmpF
+    # get dialog's exit status
+    return_value=$?
+
+    if [ $return_value != $DIALOG_OK ]
+    then
+	logger "$p: dialog not OK => returing without any change"
+	return 1
+    fi
+
+    cat $tmpF | sed "s/ //gm" | {
+	read -r _hostname
+
+	lines=`cat $tmpF | sed "s/ //gm" | grep -v '^$' | wc -l`
+
+	logger "$p: hostname '$hostname' => '$_hostname'"
+
+	newSettings=`mktemp /tmp/czertainly-manager.trustedCA.XXXXXX`
+
+	if [ "x$_hostname" != 'x' ] && [ "x$hostname" != "x$_hostname" ]
+	then
+	    if sudo /usr/local/bin/update-hostname.sh "$_hostname"
+	    then
+		infoMessage "After hostname change reboot is required. Press OK to reboot"
+		clear -x
+		echo "Rebooting..."
+		sudo /sbin/shutdown -r now
+		sleep 360
+	    else
+		logger "$p: update-hostname.sh failed"
+		errorMessage "Hostname update failed."
+	    fi
+	else
+	    logger "$p: hostname not changed"
 	fi
     }
 }
@@ -753,6 +805,9 @@ main() {
 	    logger "main_menu: exit"
 	    clear -x
 	    exit 0
+	    ;;
+	'hostname')
+	    changeHostname
 	    ;;
 	'network')
 	    network

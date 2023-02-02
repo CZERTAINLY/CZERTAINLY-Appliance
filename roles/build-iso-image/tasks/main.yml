@@ -75,6 +75,7 @@
     - czertainly.yml
     - customize4developer.sh
     - czertainly-tui.sh
+    - exec-tui
     - vars_database.sample.yml
     - vars_docker.sample.yml
     - vars_ingress.sample.yml
