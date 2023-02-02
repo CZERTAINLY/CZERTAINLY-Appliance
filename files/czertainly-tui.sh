@@ -212,7 +212,6 @@ advanced() {
     logger "$p: menuRows = $advancedMenuRows";
     result=$(dialog --backtitle "$backTitleCentered" \
 		    --ok-label 'Select' \
-		    --no-cancel \
 		    --menu "advanced menu" $advancedMenuRows $eCOLS $advancedMenuRows \
 		    "${advancedMenu[@]}" 2>&1 1>&3)
     # get dialog's exit status
