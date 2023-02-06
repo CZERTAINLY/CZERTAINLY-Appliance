@@ -129,7 +129,7 @@ confirm() {
 }
 
 removeALL() {
-    p=$FUNCNAME
+    local p=$FUNCNAME
 
     clear -x
     if [ -e $rkeUninstall ]
@@ -146,7 +146,7 @@ removeALL() {
 }
 
 removeCZERTAINLY() {
-    p=$FUNCNAME
+    local p=$FUNCNAME
 
     clear -x
     if [ -e $kubectl ]
@@ -204,7 +204,7 @@ removeCZERTAINLY() {
 backTitleCentered=`center_text "$backTitle"`;
 
 advanced() {
-    p=$FUNCNAME
+    local p=$FUNCNAME
     # duplicate (make a backup copy of) file descriptor 1 on descriptor 3
     exec 3>&1
 
@@ -282,7 +282,7 @@ advanced() {
 network() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
-    p=$FUNCNAME
+    local p=$FUNCNAME
     settings=$proxySettings
 
     httpProxy=`grep < $settings '^ *http: ' | sed "s/^ *http: *//"`
@@ -364,7 +364,7 @@ proxy:" > $newSettings
 database() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
-    p=$FUNCNAME
+    local p=$FUNCNAME
     settings=$databaseSettings
 
     username=`grep < $settings '^ *username: ' | sed "s/^ *username: *//"`
@@ -470,7 +470,7 @@ testCertificateKey() {
 ingressTLS() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
-    p=$FUNCNAME
+    local p=$FUNCNAME
     settings=$ingressSettings
 
     certificate=`grep < $settings '^ *certificate_file: ' | sed "s/^ *certificate_file: *//"`
@@ -565,7 +565,7 @@ testTrustedCAfile() {
 trustedCA() {
     maxLen=120
     maxInputLen=$[$eCOLS-20]
-    p=$FUNCNAME
+    local p=$FUNCNAME
     settings=$trustedCASettings
 
     trustedCA=`grep < $settings '^ *trustedCA_file: ' | sed "s/^ *trustedCA_file: *//"`
@@ -624,7 +624,7 @@ changeHostname() {
     # https://wiki.debian.org/Hostname
     maxLen=120
     maxInputLen=$[$eCOLS-8]
-    p=$FUNCNAME
+    local p=$FUNCNAME
 
     hostname=`hostname -f`
 
@@ -672,7 +672,7 @@ changeHostname() {
 docker() {
     maxLen=120
     maxInputLen=$[$eCOLS-20-7]
-    p=$FUNCNAME
+    local p=$FUNCNAME
     settings=$dockerSettings
 
     username=`grep < $settings '^ *username: ' | sed "s/^ *username: *//"`
@@ -741,7 +741,7 @@ docker:
 }
 
 execAnsible() {
-    p=$FUNCNAME
+    local p=$FUNCNAME
     cmd=$1
     mode=$2
 
