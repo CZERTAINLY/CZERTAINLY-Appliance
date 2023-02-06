@@ -6,7 +6,6 @@
 # accessing that repository.
 docker:
   server: harbor.3key.company
-  helm_chart_version: 2.5.2
   email: vmi-int@3key.company
   secret: regcred
   username: <username>

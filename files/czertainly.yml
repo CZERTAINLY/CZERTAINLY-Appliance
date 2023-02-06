@@ -19,6 +19,9 @@
     - name: "read trustedCA.yml"
       include_vars: /etc/ansible/vars/trustedCA.yml
       tags: always
+    - name: "read czertainly.yml"
+      include_vars: /etc/ansible/vars/czertainly.yml
+      tags: always
 
   vars:
     # Here we are preparing dict with environment which is based on

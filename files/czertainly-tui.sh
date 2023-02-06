@@ -30,6 +30,7 @@ mainMenu=(
     'trustedCA'    "Configure custom trusted certificates"
     'database'     "Configure database"
     '3keyRepo'     "Configure 3Key.Company Docker repository access credentials"
+    'czertainly'   "Configure CZERTAINLY"
     'install'      "Install CZERTAINLY"
 #    'status'       "Show CZERTAINLY status"
     'advanced'     "Advanced options"
@@ -52,6 +53,7 @@ advancedMenu=(
 )
 proxySettings='/etc/ansible/vars/proxy.yml'
 dockerSettings='/etc/ansible/vars/docker.yml'
+czertainlySettings='/etc/ansible/vars/czertainly.yml'
 databaseSettings='/etc/ansible/vars/database.yml'
 ingressSettings='/etc/ansible/vars/ingress.yml'
 trustedCASettings='/etc/ansible/vars/trustedCA.yml'
@@ -423,6 +425,129 @@ postgres:" > $newSettings
     }
 }
 
+# true|false to X
+tf2x() {
+    in=$1
+    local p=$FUNCNAME
+
+    if echo "$in" | grep -i true >/dev/null 2>&1
+    then
+	echo "X"
+	logger "$p: '$in' -> 'X'"
+    else
+	echo ""
+	logger "$p: '$in' -> ' '"
+    fi
+
+    return 0
+}
+
+# X to true|false
+x2tf() {
+    in=$1
+    local p=$FUNCNAME
+
+    if [ "$in" != 'X' ] && [ "$in" != 'x' ] && [ "$in" != 'y' ]
+    then
+	echo 'false'
+	logger "$p: '$in' -> 'false'"
+    else
+	echo 'true'
+	logger "$p: '$in' -> 'true'"
+    fi
+
+}
+
+czertainlyConfig() {
+    maxLen=10
+    maxInputLen=$[$eCOLS-20]
+    local p=$FUNCNAME
+    settings=$czertainlySettings
+
+    version=`grep < $settings '^ *version: ' | sed "s/^ *version: *//"`
+    commonCredentialProvider=$(tf2x $(grep < $settings '^ *commonCredentialProvider: ' | sed "s/^ *commonCredentialProvider: *//"))
+    ejbcaNgConnector=$(tf2x $(grep < $settings '^ *ejbcaNgConnector: ' | sed "s/^ *ejbcaNgConnector: *//"))
+    msAdcsConnector=$(tf2x $(grep < $settings '^ *msAdcsConnector: ' | sed "s/^ *msAdcsConnector: *//"))
+    x509ComplianceProvider=$(tf2x $(grep < $settings '^ *x509ComplianceProvider: ' | sed "s/^ *x509ComplianceProvider: *//"))
+    cryptosenseDiscoveryProvider=$(tf2x $(grep < $settings '^ *cryptosenseDiscoveryProvider: ' | sed "s/^ *cryptosenseDiscoveryProvider: *//"))
+    networkDiscoveryProvider=$(tf2x $(grep < $settings '^ *networkDiscoveryProvider: ' | sed "s/^ *networkDiscoveryProvider: *//"))
+    keystoreEntityProvider=$(tf2x $(grep < $settings '^ *keystoreEntityProvider: ' | sed "s/^ *keystoreEntityProvider: *//"))
+
+    dialog --backtitle "$backTitleCentered" --title " CZERTAINLY configuration " \
+	   --form "Parameters of CZERTAINLY instalation" 14 $eCOLS 8 \
+	   "CZERTAINLY version:"             1 1 "$version"                      1 21 $maxInputLen $maxLen \
+	   "Common Credential Provider:"     2 1 "$commonCredentialProvider"     2 33 2            1 \
+	   "EJBCA NG Connector:"             3 1 "$ejbcaNgConnector"             3 33 2            1 \
+	   "MS ADCS Connector:"              4 1 "$msAdcsConnector"              4 33 2            1 \
+	   "X509 Compliance Provider:"       5 1 "$x509ComplianceProvider"       5 33 2            1 \
+	   "Cryptosense Discovery Provider:" 6 1 "$cryptosenseDiscoveryProvider" 6 33 2            1 \
+	   "Network Discovery Provider:"     7 1 "$networkDiscoveryProvider"     7 33 2            1 \
+	   "Keystore Entity Provider:"       8 1 "$keystoreEntityProvider"       8 33 2            1 \
+	   2>$tmpF
+    # get dialog's exit status
+    return_value=$?
+
+    if [ $return_value != $DIALOG_OK ]
+    then
+	logger "$p: dialog not OK => returing without any change"
+	return 1
+    fi
+
+    cat $tmpF | sed "s/ //gm" | {
+	read -r _version
+	read -r _commonCredentialProvider
+	read -r _ejbcaNgConnector
+	read -r _msAdcsConnector
+	read -r _x509ComplianceProvider
+	read -r _cryptosenseDiscoveryProvider
+	read -r _networkDiscoveryProvider
+	read -r _keystoreEntityProvider
+
+	lines=`cat $tmpF | sed "s/ //gm" | grep -v '^$' | wc -l`
+
+	logger "$p: version                      '$version'                      => '$_version'"
+	logger "$p: commonCredentialProvider     '$commonCredentialProvider'     => '$_commonCredentialProvider'"
+	logger "$p: ejbcaNgConnector             '$ejbcaNgConnector'             => '$_ejbcaNgConnector'"
+	logger "$p: msAdcsConnector              '$msAdcsConnector'              => '$_msAdcsConnector'"
+	logger "$p: x509ComplianceProvider       '$x509ComplianceProvider'       => '$_x509ComplianceProvider'"
+	logger "$p: cryptosenseDiscoveryProvider '$cryptosenseDiscoveryProvider' => '$_cryptosenseDiscoveryProvider'"
+	logger "$p: networkDiscoveryProvider     '$networkDiscoveryProvider'     => '$_networkDiscoveryProvider'"
+	logger "$p: keystoreEntityProvider       '$keystoreEntityProvider'       => '$_keystoreEntityProvider'"
+
+	newSettings=`mktemp /tmp/czertainly-manager.czertainly.XXXXXX`
+
+	_commonCredentialProvider=$(x2tf     "$_commonCredentialProvider")
+	_ejbcaNgConnector=$(x2tf             "$_ejbcaNgConnector")
+	_msAdcsConnector=$(x2tf              "$_msAdcsConnector")
+	_x509ComplianceProvider=$(x2tf       "$_x509ComplianceProvider")
+	_cryptosenseDiscoveryProvider=$(x2tf "$_cryptosenseDiscoveryProvider")
+	_networkDiscoveryProvider=$(x2tf     "$_networkDiscoveryProvider")
+	_keystoreEntityProvider=$(x2tf       "$_keystoreEntityProvider")
+
+	echo "---
+czertainly:
+  version: $_version
+  commonCredentialProvider: $_commonCredentialProvider
+  ejbcaNgConnector: $_ejbcaNgConnector
+  msAdcsConnector: $_msAdcsConnector
+  x509ComplianceProvider: $_x509ComplianceProvider
+  cryptosenseDiscoveryProvider: $_cryptosenseDiscoveryProvider
+  networkDiscoveryProvider: $_networkDiscoveryProvider
+  keystoreEntityProvider: $_keystoreEntityProvider
+" > $newSettings
+
+	if `diff $newSettings $settings >/dev/null 2>&1`
+	then
+	    logger "$p: nothing changed"
+	    rm $newSettings
+	else
+	    cp $newSettings $settings
+	    rm $newSettings
+	    logger "$p: settings changed $settings rewritten"
+	fi
+    }
+}
+
 testCertificateKey() {
     cert=$1
     key=$2
@@ -680,14 +805,12 @@ docker() {
     server=`grep < $settings '^ *server: ' | sed "s/^ *server: *//"`
     secret=`grep < $settings '^ *secret: ' | sed "s/^ *secret: *//"`
     email=`grep < $settings '^ *email: ' | sed "s/^ *email: *//"`
-    version=`grep < $settings '^ *helm_chart_version: ' | sed "s/^ *helm_chart_version: *//"`
 
     dialog --backtitle "$backTitleCentered" --title " docker repository " \
 	   --form "Parameters of Docker image repository" 10 $eCOLS 4 \
 	   "server:"               1 13 "$server"   1 21 $maxInputLen $maxLen \
-	   "CZERTAINLY version:"   2  1 "$version"  2 21 $maxInputLen $maxLen \
-	   "username:"             3 11 "$username" 3 21 $maxInputLen $maxLen \
-	   "password:"             4 11 "$password" 4 21 $maxInputLen $maxLen \
+	   "username:"             2 11 "$username" 2 21 $maxInputLen $maxLen \
+	   "password:"             3 11 "$password" 3 21 $maxInputLen $maxLen \
 	   2>$tmpF
     # get dialog's exit status
     return_value=$?
@@ -700,7 +823,6 @@ docker() {
 
     cat $tmpF | sed "s/ //gm" | {
 	read -r _server
-	read -r _version
 	read -r _username
 	read -r _password
 
@@ -709,16 +831,14 @@ docker() {
 	logger "$p: username  '$username' => '$_username'"
 	logger "$p: password  '$password' => '$_password'"
 	logger "$p: server    '$server' => '$_server'"
-	logger "$p: version   '$version' => '$_version'"
 
 	newSettings=`mktemp /tmp/czertainly-manager.docker.XXXXXX`
 
-	if [ $lines -eq 4 ]
+	if [ $lines -eq 3 ]
 	then
 	    echo "---
 docker:
   server: $_server
-  helm_chart_version: $_version
   email: $email
   secret: $secret
   username: $_username
@@ -822,6 +942,9 @@ main() {
 	    ;;
 	'trustedCA')
 	    trustedCA
+	    ;;
+	'czertainly')
+	    czertainlyConfig
 	    ;;
 	'install')
 	    if confirm "Have you set up access credentials to harbor.3key.company and possibly adjusted other options? Please confirm installation by selecting Yes button. Complete installation takes about 10 minutes."

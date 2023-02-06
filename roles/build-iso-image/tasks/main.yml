@@ -79,6 +79,7 @@
     - exec-tui
     - vars_database.sample.yml
     - vars_docker.sample.yml
+    - vars_czertainly.sample.yml
     - vars_ingress.sample.yml
     - vars_proxy.sample.yml
     - vars_trustedCA.sample.yml
