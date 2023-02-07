@@ -31,7 +31,7 @@ Start virtual machine, login as `czertainly` user with password `newgenerationtr
 ```
 $ sudo -i
 # adjust access credentials to harbor.3key.company
-vim /etc/ansible/group_vars/all.yml
+vim /etc/ansible/vars/docker.yml
 # exec CZERTAINLY instalation
 ansible-playbook /etc/ansible/playbooks/czertainly.yml
 ```

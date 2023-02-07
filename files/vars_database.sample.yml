@@ -1,0 +1,11 @@
+# Configuration for Ansible CZERTAINLY instalation.
+---
+# Default parameters for PostgreSQL database are hardcoded. You don't
+# need to specify them explicitly. If you need to adjust the password,
+# you must also uncomment the 'postreges' key!
+#
+postgres:
+  username: czertainlyuser
+  password: your-strong-password
+  database: czertainlydb
+

@@ -2,6 +2,23 @@
 
 set -e
 
+mkdir -p /etc/ansible/vars
+chgrp -R adm /etc/ansible/vars
+chmod -R +w,g+w /etc/ansible/vars
+chmod g+s /etc/ansible/vars
+
+chmod +x /usr/local/bin/customize4developer.sh
+chmod +x /usr/local/bin/czertainly-tui.sh
+chmod +x /usr/local/bin/update-hostname.sh
+
+chmod 0440 /etc/sudoers.d/czertainly
+
+# We need SCP so we can't change shell. File .bashrc is used only in
+# interactive mode.
+echo "
+. /etc/ansible/exec-tui
+" >> /home/czertainly/.bashrc
+
 git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
 git checkout {{ ansible_roles.branding.branch }}
