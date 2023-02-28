@@ -3,6 +3,26 @@
   hosts: all
   connection: local
 
+  pre_tasks:
+    - name: "read database.yml"
+      include_vars: /etc/ansible/vars/database.yml
+      tags: always
+    - name: "read docker.yml"
+      include_vars: /etc/ansible/vars/docker.yml
+      tags: always
+    - name: "read proxy.yml"
+      include_vars: /etc/ansible/vars/proxy.yml
+      tags: always
+    - name: "read ingress.yml"
+      include_vars: /etc/ansible/vars/ingress.yml
+      tags: always
+    - name: "read trustedCA.yml"
+      include_vars: /etc/ansible/vars/trustedCA.yml
+      tags: always
+    - name: "read czertainly.yml"
+      include_vars: /etc/ansible/vars/czertainly.yml
+      tags: always
+
   vars:
     # Here we are preparing dict with environment which is based on
     # configuration. In most cases values of that dict will be

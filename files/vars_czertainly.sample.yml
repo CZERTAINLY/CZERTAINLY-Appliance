@@ -1,0 +1,10 @@
+---
+czertainly:
+  version: 2.5.2
+  commonCredentialProvider: true
+  ejbcaNgConnector: true
+  msAdcsConnector: true
+  x509ComplianceProvider: true
+  cryptosenseDiscoveryProvider: true
+  networkDiscoveryProvider: true
+  keystoreEntityProvider: true
