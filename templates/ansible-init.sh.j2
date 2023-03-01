@@ -23,9 +23,17 @@ git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
 cd /etc/ansible/roles/branding
 git checkout {{ ansible_roles.branding.branch }}
 
-git clone {{ ansible_roles.host_config.repo }} /etc/ansible/roles/host-config
-cd /etc/ansible/roles/host-config
-git checkout {{ ansible_roles.host_config.branch }}
+git clone {{ ansible_roles.http_proxy.repo }} /etc/ansible/roles/http_proxy
+cd /etc/ansible/roles/http_proxy
+git checkout {{ ansible_roles.http_proxy.branch }}
+
+git clone {{ ansible_roles.postgres.repo }} /etc/ansible/roles/postgres
+cd /etc/ansible/roles/postgres
+git checkout {{ ansible_roles.postgres.branch }}
+
+git clone {{ ansible_roles.helm.repo }} /etc/ansible/roles/helm
+cd /etc/ansible/roles/helm
+git checkout {{ ansible_roles.helm.branch }}
 
 git clone {{ ansible_roles.rke2.repo }} /etc/ansible/roles/rke2
 cd /etc/ansible/roles/rke2
