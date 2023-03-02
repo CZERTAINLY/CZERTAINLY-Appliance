@@ -69,21 +69,11 @@
     dest: "{{ wdir }}/iso/CZERTAINLY/"
   loop:
     - authorized_keys
-    - ansible.cfg
-    - inventory.conf
-    - czertainly-branding.yml
-    - czertainly.yml
     - customize4developer.sh
     - czertainly-tui.sh
     - czertainly-status.sh
     - update-hostname.sh
     - exec-tui
-    - vars_database.sample.yml
-    - vars_docker.sample.yml
-    - vars_czertainly.sample.yml
-    - vars_ingress.sample.yml
-    - vars_proxy.sample.yml
-    - vars_trustedCA.sample.yml
     - sudoers.d.czertainly
   register: c3k_files
 

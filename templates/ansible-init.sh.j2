@@ -2,15 +2,9 @@
 
 set -e
 
-mkdir -p /etc/ansible/vars
-chgrp -R adm /etc/ansible/vars
-chmod -R +w,g+w /etc/ansible/vars
-chmod g+s /etc/ansible/vars
-
-chmod +x /usr/local/bin/customize4developer.sh
-chmod +x /usr/local/bin/czertainly-tui.sh
-chmod +x /usr/local/bin/czertainly-status.sh
-chmod +x /usr/local/bin/update-hostname.sh
+git clone https://github.com/semik/CZERTAINLY-Ansible.git /etc/czertainly-ansible
+cd /etc/czertainly-ansible
+git submodule update --init --recursive
 
 chmod 0440 /etc/sudoers.d/czertainly
 
@@ -19,30 +13,6 @@ chmod 0440 /etc/sudoers.d/czertainly
 echo "
 . /etc/ansible/exec-tui
 " >> /home/czertainly/.bashrc
-
-git clone {{ ansible_roles.branding.repo }} /etc/ansible/roles/branding
-cd /etc/ansible/roles/branding
-git checkout {{ ansible_roles.branding.branch }}
-
-git clone {{ ansible_roles.http_proxy.repo }} /etc/ansible/roles/http_proxy
-cd /etc/ansible/roles/http_proxy
-git checkout {{ ansible_roles.http_proxy.branch }}
-
-git clone {{ ansible_roles.postgres.repo }} /etc/ansible/roles/postgres
-cd /etc/ansible/roles/postgres
-git checkout {{ ansible_roles.postgres.branch }}
-
-git clone {{ ansible_roles.helm.repo }} /etc/ansible/roles/helm
-cd /etc/ansible/roles/helm
-git checkout {{ ansible_roles.helm.branch }}
-
-git clone {{ ansible_roles.rke2.repo }} /etc/ansible/roles/rke2
-cd /etc/ansible/roles/rke2
-git checkout {{ ansible_roles.rke2.branch }}
-
-git clone {{ ansible_roles.czertainly.repo }} /etc/ansible/roles/czertainly
-cd /etc/ansible/roles/czertainly
-git checkout {{ ansible_roles.czertainly.branch }}
 
 # during installation is $HOME variable set to / so ansible-galaxy
 # installs into /

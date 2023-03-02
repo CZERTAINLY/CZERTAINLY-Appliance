@@ -63,22 +63,12 @@ d-i preseed/late_command string \
     in-target mkdir /etc/ansible/roles && \
     in-target mkdir /etc/ansible/vars && \
     cp /cdrom/CZERTAINLY/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
-    cp /cdrom/CZERTAINLY/ansible.cfg /target/etc/ansible/ && \
-    cp /cdrom/CZERTAINLY/inventory.conf /target/etc/ansible/ && \
-    cp /cdrom/CZERTAINLY/czertainly-branding.yml /target/etc/ansible/playbooks && \
-    cp /cdrom/CZERTAINLY/czertainly.yml /target/etc/ansible/playbooks && \
     cp /cdrom/CZERTAINLY/ansible-init.sh /target/etc/ansible/ && \
     cp /cdrom/CZERTAINLY/customize4developer.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/czertainly-tui.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/czertainly-status.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/update-hostname.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/exec-tui /target/etc/ansible/ && \
-    cp /cdrom/CZERTAINLY/vars_database.sample.yml /target/etc/ansible/vars/database.yml && \
-    cp /cdrom/CZERTAINLY/vars_docker.sample.yml /target/etc/ansible/vars/docker.yml && \
-    cp /cdrom/CZERTAINLY/vars_czertainly.sample.yml /target/etc/ansible/vars/czertainly.yml && \
-    cp /cdrom/CZERTAINLY/vars_ingress.sample.yml /target/etc/ansible/vars/ingress.yml && \
-    cp /cdrom/CZERTAINLY/vars_proxy.sample.yml /target/etc/ansible/vars/proxy.yml && \
-    cp /cdrom/CZERTAINLY/vars_trustedCA.sample.yml /target/etc/ansible/vars/trustedCA.yml && \
     cp /cdrom/CZERTAINLY/sudoers.d.czertainly /target/etc/sudoers.d/czertainly && \
     chmod +x /target/etc/ansible/ansible-init.sh && \
     in-target /etc/ansible/ansible-init.sh
