@@ -6,6 +6,10 @@ git clone https://github.com/semik/CZERTAINLY-Ansible.git /etc/czertainly-ansibl
 cd /etc/czertainly-ansible
 git submodule update --init --recursive
 
+chmod +x /usr/local/bin/customize4developer.sh
+chmod +x /usr/local/bin/czertainly-tui.sh
+chmod +x /usr/local/bin/update-hostname.sh
+
 chmod 0440 /etc/sudoers.d/czertainly
 
 # We need SCP so we can't change shell. File .bashrc is used only in
@@ -18,4 +22,4 @@ echo "
 # installs into /
 HOME=/root ansible-galaxy collection install kubernetes.core
 
-ansible-playbook /etc/ansible/playbooks/czertainly-branding.yml
+ansible-playbook /etc/czertainly-ansible/playbooks/czertainly-branding.yml
