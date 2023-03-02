@@ -9,4 +9,5 @@ czertainly ALL = NOPASSWD: /var/lib/rancher/rke2/bin/kubectl -n czertainly get a
 czertainly ALL = NOPASSWD: /usr/bin/rm /root/install/docker-secret.yaml
 czertainly ALL = NOPASSWD: /usr/bin/rm /root/install/czertainly-values.yaml
 czertainly ALL = NOPASSWD: /usr/bin/rm /root/install/czertainly-values.local.yaml
-
+czertainly ALL = NOPASSWD: /usr/bin/apt update
+czertainly ALL = NOPASSWD: /usr/bin/apt upgrade

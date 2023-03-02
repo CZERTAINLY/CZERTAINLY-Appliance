@@ -44,6 +44,7 @@ advancedMenu=(
 #    'installRKE2'        "Install only RKE2 - Rancher\'s next-generation Kubernetes distribution"
 #    'verifyRKE2'         'Verify kubernetes',
 #    'installC'           'Install only CZERTAINLY'
+    'update'             'Update Operating System',
     'removeC'            'Remove CZERTAINLY'
     'remove'             'Remove RKE2 & CZERTAINLY'
     'shell'              'Enter system shell'
@@ -203,6 +204,15 @@ removeCZERTAINLY() {
     fi
 }
 
+update() {
+    clear -x
+    echo ""
+    sudo /usr/bin/apt update && sudo /usr/bin/apt upgrade
+    echo ""
+    echo "press enter to return into menu"
+    read
+}
+
 backTitleCentered=`center_text "$backTitle"`;
 
 advanced() {
@@ -234,6 +244,9 @@ advanced() {
 	    logger "$p: exit"
 	    echo "exit"
 	    return 1
+	    ;;
+	'update')
+	    update
 	    ;;
 	'remove')
 	    if confirm "Remove RKE2 (kubernetes) including CZERTAINLY? Database will remain untouched."
