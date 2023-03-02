@@ -44,9 +44,11 @@ By default Appliance builder uses parameters from [`vars/main.yml`](./vars/main.
 
 Playbook for CZERTAINLY installation depends on following Ansible
 roles:
-  - [CZERTAINLY-Appliance-Branding](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding)
-  - [CZERTAINLY-Appliance-Host-Config](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config)
-  - [CZERTAINLY-Appliance-RKE2](https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2)
+  - [ansible-role-czertainly-branding](https://github.com/3KeyCompany/ansible-role-czertainly-branding)
+  - [ansible-role-http-proxy](https://github.com/3KeyCompany/ansible-role-http-proxy)
+  - [ansible-role-postgres](https://github.com/3KeyCompany/ansible-role-postgres)
+  - [ansible-role-helm](https://github.com/3KeyCompany/ansible-role-helm)
+  - [ansible-role-rke2](https://github.com/3KeyCompany/ansible-role-rke2)
   - [ansible-role-czertainly](https://github.com/3KeyCompany/ansible-role-czertainly)
 
 They are cloned into `/etc/ansible` directory during Appliance image

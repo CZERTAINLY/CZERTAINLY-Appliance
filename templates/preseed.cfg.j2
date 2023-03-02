@@ -58,26 +58,26 @@ d-i debian-installer/exit/poweroff boolean true
 d-i preseed/late_command string \
     in-target mkdir /home/czertainly/.ssh && \
     in-target chown -R czertainly.czertainly /home/czertainly/.ssh && \
-    cp /cdrom/3KeyCompany/authorized_keys /target/home/czertainly/.ssh && \
+    cp /cdrom/CZERTAINLY/authorized_keys /target/home/czertainly/.ssh && \
     in-target mkdir -p /etc/ansible/playbooks && \
     in-target mkdir /etc/ansible/roles && \
     in-target mkdir /etc/ansible/vars && \
-    cp /cdrom/3KeyCompany/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
-    cp /cdrom/3KeyCompany/ansible.cfg /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/inventory.conf /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/czertainly-branding.yml /target/etc/ansible/playbooks && \
-    cp /cdrom/3KeyCompany/czertainly.yml /target/etc/ansible/playbooks && \
-    cp /cdrom/3KeyCompany/ansible-init.sh /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/customize4developer.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/czertainly-tui.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/update-hostname.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/exec-tui /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/vars_database.sample.yml /target/etc/ansible/vars/database.yml && \
-    cp /cdrom/3KeyCompany/vars_docker.sample.yml /target/etc/ansible/vars/docker.yml && \
-    cp /cdrom/3KeyCompany/vars_czertainly.sample.yml /target/etc/ansible/vars/czertainly.yml && \
-    cp /cdrom/3KeyCompany/vars_ingress.sample.yml /target/etc/ansible/vars/ingress.yml && \
-    cp /cdrom/3KeyCompany/vars_proxy.sample.yml /target/etc/ansible/vars/proxy.yml && \
-    cp /cdrom/3KeyCompany/vars_trustedCA.sample.yml /target/etc/ansible/vars/trustedCA.yml && \
-    cp /cdrom/3KeyCompany/sudoers.d.czertainly /target/etc/sudoers.d/czertainly && \
+    cp /cdrom/CZERTAINLY/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
+    cp /cdrom/CZERTAINLY/ansible.cfg /target/etc/ansible/ && \
+    cp /cdrom/CZERTAINLY/inventory.conf /target/etc/ansible/ && \
+    cp /cdrom/CZERTAINLY/czertainly-branding.yml /target/etc/ansible/playbooks && \
+    cp /cdrom/CZERTAINLY/czertainly.yml /target/etc/ansible/playbooks && \
+    cp /cdrom/CZERTAINLY/ansible-init.sh /target/etc/ansible/ && \
+    cp /cdrom/CZERTAINLY/customize4developer.sh /target/usr/local/bin/ && \
+    cp /cdrom/CZERTAINLY/czertainly-tui.sh /target/usr/local/bin/ && \
+    cp /cdrom/CZERTAINLY/update-hostname.sh /target/usr/local/bin/ && \
+    cp /cdrom/CZERTAINLY/exec-tui /target/etc/ansible/ && \
+    cp /cdrom/CZERTAINLY/vars_database.sample.yml /target/etc/ansible/vars/database.yml && \
+    cp /cdrom/CZERTAINLY/vars_docker.sample.yml /target/etc/ansible/vars/docker.yml && \
+    cp /cdrom/CZERTAINLY/vars_czertainly.sample.yml /target/etc/ansible/vars/czertainly.yml && \
+    cp /cdrom/CZERTAINLY/vars_ingress.sample.yml /target/etc/ansible/vars/ingress.yml && \
+    cp /cdrom/CZERTAINLY/vars_proxy.sample.yml /target/etc/ansible/vars/proxy.yml && \
+    cp /cdrom/CZERTAINLY/vars_trustedCA.sample.yml /target/etc/ansible/vars/trustedCA.yml && \
+    cp /cdrom/CZERTAINLY/sudoers.d.czertainly /target/etc/sudoers.d/czertainly && \
     chmod +x /target/etc/ansible/ansible-init.sh && \
     in-target /etc/ansible/ansible-init.sh

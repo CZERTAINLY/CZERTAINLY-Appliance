@@ -6,7 +6,7 @@
   loop:
     - "{{ wdir }}"
     - "{{ wdir }}/iso"
-    - "{{ wdir }}/iso/3KeyCompany"
+    - "{{ wdir }}/iso/CZERTAINLY"
 
 - name: check for netinst image
   ansible.builtin.stat:
@@ -54,7 +54,7 @@
   ansible.builtin.lineinfile:
     path: "{{ wdir }}/iso/isolinux/gtk.cfg"
     regexp: '^\sappend'
-    line: '	append vga=788 initrd=/install.amd/gtk/initrd.gz --- auto=true preseed/file=/cdrom/3KeyCompany/preseed.cfg priority=critical quiet splash net.ifnames=0 biosdevname=0 debian-installer/locale=en_US keyboard-configuration/layoutcode=us languagechooser/language-name=English localechooser/supported-locales=en_US.UTF-8 countrychooser/shortlist=CT --'
+    line: '	append vga=788 initrd=/install.amd/gtk/initrd.gz --- auto=true preseed/file=/cdrom/CZERTAINLY/preseed.cfg priority=critical quiet splash net.ifnames=0 biosdevname=0 debian-installer/locale=en_US keyboard-configuration/layoutcode=us languagechooser/language-name=English localechooser/supported-locales=en_US.UTF-8 countrychooser/shortlist=CT --'
   register: gtk
 
 - name: check for presence of our customized install ISO
@@ -63,10 +63,10 @@
     get_checksum: false
   register: our_image
 
-- name: copy 3KeyCompany files
+- name: copy CZERTAINLY files
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ wdir }}/iso/3KeyCompany/"
+    dest: "{{ wdir }}/iso/CZERTAINLY/"
   loop:
     - authorized_keys
     - ansible.cfg
@@ -86,10 +86,10 @@
     - sudoers.d.czertainly
   register: c3k_files
 
-- name: copy 3KeyCompany templated files
+- name: copy CZERTAINLY templated files
   ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "{{ wdir }}/iso/3KeyCompany/{{ item }}"
+    dest: "{{ wdir }}/iso/CZERTAINLY/{{ item }}"
   loop:
     - czertainly_appliance_version
     - preseed.cfg

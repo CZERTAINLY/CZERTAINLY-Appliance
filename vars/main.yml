@@ -1,14 +1,20 @@
 ---
-appliance_version: 0.5.5
+appliance_version: 2.6.0
 ansible_roles:
   branding:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
+    repo: https://github.com/3KeyCompany/ansible-role-czertainly-branding.git
     branch: main
-  host_config:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config.git
+  http_proxy:
+    repo: https://github.com/3KeyCompany/ansible-role-http-proxy.git
+    branch: main
+  postgres:
+    repo: https://github.com/3KeyCompany/ansible-role-postgres.git
+    branch: main
+  helm:
+    repo: https://github.com/3KeyCompany/ansible-role-helm.git
     branch: main
   rke2:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2.git
+    repo: https://github.com/3KeyCompany/ansible-role-rke2.git
     branch: main
   czertainly:
     repo: https://github.com/3KeyCompany/ansible-role-czertainly.git
