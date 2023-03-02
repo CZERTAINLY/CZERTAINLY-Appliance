@@ -28,11 +28,11 @@ mainMenu=(
     "network"      "Configure HTTP proxy"
     'ingressTLS'   "Configure ingress TLS certificates"
     'trustedCA'    "Configure custom trusted certificates"
-    'database'     "Configure database"
-    '3keyRepo'     "Configure 3Key.Company Docker repository access credentials"
+    'postgres'     "Configure database"
+    'dockerRepo'   "Configure Docker repository access credentials"
     'czertainly'   "Configure CZERTAINLY"
     'install'      "Install CZERTAINLY"
-#    'status'       "Show CZERTAINLY status"
+    'status'       "Show CZERTAINLY status"
     'advanced'     "Advanced options"
     'exit'         "Exit CZERTAINLY manager"
 )
@@ -485,9 +485,11 @@ czertainlyConfig() {
     cryptosenseDiscoveryProvider=$(tf2x $(grep < $settings '^ *cryptosenseDiscoveryProvider: ' | sed "s/^ *cryptosenseDiscoveryProvider: *//"))
     networkDiscoveryProvider=$(tf2x $(grep < $settings '^ *networkDiscoveryProvider: ' | sed "s/^ *networkDiscoveryProvider: *//"))
     keystoreEntityProvider=$(tf2x $(grep < $settings '^ *keystoreEntityProvider: ' | sed "s/^ *keystoreEntityProvider: *//"))
+    softwareCryptographyProvider=$(tf2x $(grep < $settings '^ *softwareCryptographyProvider: ' | sed "s/^ *softwareCryptographyProvider: *//"))
+
 
     dialog --backtitle "$backTitleCentered" --title " CZERTAINLY configuration " \
-	   --form "Parameters of CZERTAINLY instalation" 14 $eCOLS 8 \
+	   --form "Parameters of CZERTAINLY instalation" 15 $eCOLS 9 \
 	   "CZERTAINLY version:"             1 1 "$version"                      1 21 $maxInputLen $maxLen \
 	   "Common Credential Provider:"     2 1 "$commonCredentialProvider"     2 33 2            1 \
 	   "EJBCA NG Connector:"             3 1 "$ejbcaNgConnector"             3 33 2            1 \
@@ -496,6 +498,7 @@ czertainlyConfig() {
 	   "Cryptosense Discovery Provider:" 6 1 "$cryptosenseDiscoveryProvider" 6 33 2            1 \
 	   "Network Discovery Provider:"     7 1 "$networkDiscoveryProvider"     7 33 2            1 \
 	   "Keystore Entity Provider:"       8 1 "$keystoreEntityProvider"       8 33 2            1 \
+	   "Software Cryptography Provider:" 9 1 "$softwareCryptographyProvider" 9 33 2            1 \
 	   2>$tmpF
     # get dialog's exit status
     return_value=$?
@@ -515,6 +518,7 @@ czertainlyConfig() {
 	read -r _cryptosenseDiscoveryProvider
 	read -r _networkDiscoveryProvider
 	read -r _keystoreEntityProvider
+	read -r _softwareCryptographyProvider
 
 	lines=`cat $tmpF | sed "s/ //gm" | grep -v '^$' | wc -l`
 
@@ -526,6 +530,7 @@ czertainlyConfig() {
 	logger "$p: cryptosenseDiscoveryProvider '$cryptosenseDiscoveryProvider' => '$_cryptosenseDiscoveryProvider'"
 	logger "$p: networkDiscoveryProvider     '$networkDiscoveryProvider'     => '$_networkDiscoveryProvider'"
 	logger "$p: keystoreEntityProvider       '$keystoreEntityProvider'       => '$_keystoreEntityProvider'"
+	logger "$p: softwareCryptographyProvider '$softwareCryptographyProvider' => '$_softwareCryptographyProvider'"
 
 	newSettings=`mktemp /tmp/czertainly-manager.czertainly.XXXXXX`
 
@@ -536,6 +541,7 @@ czertainlyConfig() {
 	_cryptosenseDiscoveryProvider=$(x2tf "$_cryptosenseDiscoveryProvider")
 	_networkDiscoveryProvider=$(x2tf     "$_networkDiscoveryProvider")
 	_keystoreEntityProvider=$(x2tf       "$_keystoreEntityProvider")
+	_softwareCryptographyProvider=$(x2tf "$_softwareCryptographyProvider")
 
 	echo "---
 czertainly:
@@ -547,6 +553,7 @@ czertainly:
   cryptosenseDiscoveryProvider: $_cryptosenseDiscoveryProvider
   networkDiscoveryProvider: $_networkDiscoveryProvider
   keystoreEntityProvider: $_keystoreEntityProvider
+  softwareCryptographyProvider: $_softwareCryptographyProvider
 " > $newSettings
 
 	if `diff $newSettings $settings >/dev/null 2>&1`
@@ -886,8 +893,6 @@ execAnsible() {
     if [ "x$mode" == 'xfull-install' ]
     then
 	echo "First installation takes about 10minutes, please be patient."
-	echo ""
-	echo ""
     fi
 
     $cmd
@@ -896,6 +901,9 @@ execAnsible() {
     if [ $result == 0 ]
     then
 	echo "Ansible finished successfully, result code: $result"
+	echo ""
+	echo "Status of Kubernetes and CZERTAINLY"
+	/usr/local/bin/czertainly-status.sh
     else
 	echo "Ansible failed with error code: $result".
 	echo ""
@@ -908,6 +916,14 @@ to contact support please provide content of file /var/log/ansible.log"
     read
 }
 
+status() {
+    clear -x
+    echo ""
+    /usr/local/bin/czertainly-status.sh
+    echo ""
+    echo "press enter to return into menu"
+    read
+}
 
 main() {
     # duplicate (make a backup copy of) file descriptor 1 on descriptor 3
@@ -944,10 +960,10 @@ main() {
 	'network')
 	    network
 	    ;;
-	'database')
+	'postgres')
 	    database
 	    ;;
-	'3keyRepo')
+	'dockerRepo')
 	    docker
 	    ;;
 	'ingressTLS')
@@ -969,6 +985,9 @@ main() {
 	    else
 		logger "$p: install canceled"
 	    fi
+	    ;;
+	'status')
+	    status
 	    ;;
 	'advanced')
 	    logger "main_menu: advanced";
