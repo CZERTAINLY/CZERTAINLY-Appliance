@@ -1,7 +1,7 @@
 ---
 czertainly:
   version: 2.6.0
-  commonCreentialProvider: true
+  commonCredentialProvider: true
   ejbcaNgConnector: true
   msAdcsConnector: true
   x509ComplianceProvider: true
