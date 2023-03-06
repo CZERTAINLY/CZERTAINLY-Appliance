@@ -74,7 +74,6 @@
     - czertainly-status.sh
     - update-hostname.sh
     - exec-tui
-    - sudoers.d.czertainly
   register: c3k_files
 
 - name: copy CZERTAINLY templated files

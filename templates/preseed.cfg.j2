@@ -69,6 +69,5 @@ d-i preseed/late_command string \
     cp /cdrom/CZERTAINLY/czertainly-status.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/update-hostname.sh /target/usr/local/bin/ && \
     cp /cdrom/CZERTAINLY/exec-tui /target/etc/ansible/ && \
-    cp /cdrom/CZERTAINLY/sudoers.d.czertainly /target/etc/sudoers.d/czertainly && \
     chmod +x /target/etc/ansible/ansible-init.sh && \
     in-target /etc/ansible/ansible-init.sh
