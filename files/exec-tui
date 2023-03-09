@@ -11,7 +11,7 @@ if [ "$CZERTAINLY_TUI" != 'ACTIVE' ]
 then
     while true;
     do
-	if /usr/local/bin/czertainly-tui.sh
+	if /usr/bin/czertainly-tui
 	then
             exit
 	fi
