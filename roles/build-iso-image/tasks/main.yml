@@ -70,9 +70,6 @@
   loop:
     - authorized_keys
     - customize4developer.sh
-    - czertainly-tui.sh
-    - czertainly-status.sh
-    - update-hostname.sh
     - exec-tui
   register: c3k_files
 
