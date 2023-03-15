@@ -42,6 +42,7 @@ roles:
   - [ansible-role-helm](https://github.com/3KeyCompany/ansible-role-helm)
   - [ansible-role-rke2](https://github.com/3KeyCompany/ansible-role-rke2)
   - [ansible-role-czertainly](https://github.com/3KeyCompany/ansible-role-czertainly)
+
 they are provided by package [`czertainly-appliance-tools`](https://github.com/semik/CZERTAINLY-Appliance-Tools) if you need to work on any of them. Best option is to clone a repository of the role you need to work on into right place under `/etc/czertainly-ansible/roles`.
 
 If you want to run Ansible playbooks by hand don't forget to set `ANSIBLE_CONFIG` to [right](https://github.com/semik/CZERTAINLY-Appliance-Tools/blob/main/usr/bin/czertainly-tui#L26) values. Typicaly you can run instalation command from menu of Text UI.
