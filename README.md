@@ -26,22 +26,14 @@ Finished apliance is exported into file `tmp/czertainly-appliance-$APPLIANCEVERS
 
 ## Usage of the Appliance
 
-Start virtual machine, login as `czertainly` user with password `newgenerationtrustcare` and exec:
+Appliance comes with preconfigured Debian system. You need to initialiaze rke2 cluster and install CZERTAINLY. Please follow instructions from [offical documentation](https://docs.czertainly.com/docs/installation-guide/deployment/deployment-appliance/initialization).
 
-```
-$ sudo -i
-# adjust access credentials to harbor.3key.company
-vim /etc/ansible/vars/docker.yml
-# exec CZERTAINLY instalation
-ansible-playbook /etc/ansible/playbooks/czertainly.yml
-```
 ## Tips for developers
 
 By default Appliance builder uses parameters from [`vars/main.yml`](./vars/main.yml) you can make your own modifications to that file and pass it as first argument of the builder, for example:
 ```
 ./build-appliance.sh vars/develop.yml
 ```
-
 Playbook for CZERTAINLY installation depends on following Ansible
 roles:
   - [ansible-role-czertainly-branding](https://github.com/3KeyCompany/ansible-role-czertainly-branding)
@@ -50,25 +42,15 @@ roles:
   - [ansible-role-helm](https://github.com/3KeyCompany/ansible-role-helm)
   - [ansible-role-rke2](https://github.com/3KeyCompany/ansible-role-rke2)
   - [ansible-role-czertainly](https://github.com/3KeyCompany/ansible-role-czertainly)
+they are provided by package [`czertainly-appliance-tools`](https://github.com/semik/CZERTAINLY-Appliance-Tools) if you need to work on any of them. Best option is to clone a repository of the role you need to work on into right place under `/etc/czertainly-ansible/roles`.
 
-They are cloned into `/etc/ansible` directory during Appliance image
-creation. If you need use your own forks of role repositories you can
-provide path to them inside your own copy of `vars/develop.yml`. Do
-not use SSH access method, repos are being cloned during
-`late_command` of [preseed.cfg](templates/preseed.cfg.j2#L58) file -
-at that moment you wont be able to enter ssh password or use ssh key.
-
-Later inside running Appliance you can run
-[/etc/ansible/customize4developer.sh](files/customize4developer.sh) which
-will adjust repos to be pushable and copy .ssh directory from
-`czertainlyuser` to allow direct access to `root` account.
+If you want to run Ansible playbooks by hand don't forget to set `ANSIBLE_CONFIG` to [right](https://github.com/semik/CZERTAINLY-Appliance-Tools/blob/main/usr/bin/czertainly-tui#L26) values. Typicaly you can run instalation command from menu of Text UI.
 
 All Ansible roles have tags. You can run only parts you need to re-run to save your time. For example, when you want just reinstall czeratinly you can do:
 ```
 kubectl delete ns czertainly
-ansible-playbook /etc/ansible/playbooks/czertainly.yml --tags czertainly --skip-tags czertainly_sleep10
+ANSIBLE_CONFIG=/etc/czertainly-ansible/ansible.cfg ansible-playbook /etc/czertainly-ansible/playbooks/czertainly.yml --tags czertainly --skip-tags czertainly_sleep10
 ```
-
 ## Tested compatibility of resulting OVA
 
 * VirtualBox 6.1
@@ -78,6 +60,6 @@ ansible-playbook /etc/ansible/playbooks/czertainly.yml --tags czertainly --skip-
 
 ## Notes
 
-For cleaning working directory you can use `rm -rf tmp` or if you are on slow line maybe you would like more [specific command](build-appliance.sh#L5) which keeps offical Debian ISO image in place to save bandwith
+For cleaning working directory you can use `rm -rf tmp` or if you are on slow line maybe you would like more [specific command](build-appliance.sh#L5) which keeps offical Debian ISO image in place to save bandwith.
 
 Debian installation process can be automated by [preseed.cfg](./templates/preseed.cfg.j2) file which is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html). Or you can run [network install from minimal ISO](https://www.debian.org/CD/netinst/) and inside of newly installed image run `debconf-get-selections --installer`. And final tip is to try unantend install using VirtualBox, and examine storage of virtual servers, preseed and other needed configs are available there.
