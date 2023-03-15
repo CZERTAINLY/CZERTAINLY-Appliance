@@ -69,8 +69,6 @@
     dest: "{{ wdir }}/iso/CZERTAINLY/"
   loop:
     - authorized_keys
-    - customize4developer.sh
-    - exec-tui
   register: c3k_files
 
 - name: copy CZERTAINLY templated files
@@ -80,7 +78,7 @@
   loop:
     - czertainly_appliance_version
     - preseed.cfg
-    - ansible-init.sh
+    - appliance-init.sh
   register: c3k_tfiles
 
 - name: build customized install ISO
