@@ -1,24 +1,7 @@
 ---
 appliance_version: 2.6.0
-ansible_roles:
-  branding:
-    repo: https://github.com/3KeyCompany/ansible-role-czertainly-branding.git
-    branch: main
-  http_proxy:
-    repo: https://github.com/3KeyCompany/ansible-role-http-proxy.git
-    branch: main
-  postgres:
-    repo: https://github.com/3KeyCompany/ansible-role-postgres.git
-    branch: main
-  helm:
-    repo: https://github.com/3KeyCompany/ansible-role-helm.git
-    branch: main
-  rke2:
-    repo: https://github.com/3KeyCompany/ansible-role-rke2.git
-    branch: main
-  czertainly:
-    repo: https://github.com/3KeyCompany/ansible-role-czertainly.git
-    branch: main
+czertainly_deb_repository: "http://deb.czertainly.com/ bullseye main"
+czertainly_deb_key: "http://deb.czertainly.com/deb.czertainly.com.gpg"
 czertainly_netinst_image: czertainly-appliance-netinstall-{{ appliance_version }}.iso
 wdir: tmp
 debian_netinst_image:
