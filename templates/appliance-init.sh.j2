@@ -5,8 +5,7 @@ set -e
 # cdrom is unmouted and apt update is failing, so disable it
 sed -i "s/^deb cdrom/# deb cdrom/" /etc/apt/sources.list
 
-# HTTPS isn't working during instalation (no ca-certificates) so we
-# need to install appliance tools in second try.
+# https://github.com/orgs/3KeyCompany/projects/8/views/13?pane=issue&itemId=23489297
 apt update
 apt install -y czertainly-appliance-tools
 
