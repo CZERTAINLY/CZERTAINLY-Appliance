@@ -42,11 +42,11 @@ d-i apt-setup/security_host string security.debian.org
 d-i apt-setup/cdrom/set-first boolean false
 d-i apt-setup/cdrom/set-next boolean false
 d-i apt-setup/cdrom/set-failed boolean false
-d-i apt-setup/local0/repository string http://deb.czertainly.com/ stable main
+d-i apt-setup/local0/repository string {{ czertainly_deb_repository }}
 d-i apt-setup/local0/source boolean false
-d-i apt-setup/local0/key string http://deb.czertainly.com/deb.czertainly.com.gpg
+d-i apt-setup/local0/key string {{ czertainly_deb_key }}
 d-i pkgsel/run_tasksel boolean false
-d-i pkgsel/include string sudo python3 openssh-server gnupg wget dbus vim ansible plymouth plymouth-themes ssl-cert czertainly-appliance-tools fasttrack-archive-keyring git python3-apt apt-transport-https python3-kubernetes jq dialog
+d-i pkgsel/include string sudo python3 openssh-server gnupg wget dbus vim ansible plymouth plymouth-themes ssl-cert  fasttrack-archive-keyring git python3-apt apt-transport-https python3-kubernetes jq dialog ca-certificates
 d-i pkgsel/upgrade select safe-upgrade
 popularity-contest popularity-contest/participate boolean false
 d-i grub-installer/only_debian boolean true
@@ -58,26 +58,8 @@ d-i debian-installer/exit/poweroff boolean true
 d-i preseed/late_command string \
     in-target mkdir /home/czertainly/.ssh && \
     in-target chown -R czertainly.czertainly /home/czertainly/.ssh && \
-    cp /cdrom/3KeyCompany/authorized_keys /target/home/czertainly/.ssh && \
-    in-target mkdir -p /etc/ansible/playbooks && \
-    in-target mkdir /etc/ansible/roles && \
-    in-target mkdir /etc/ansible/vars && \
-    cp /cdrom/3KeyCompany/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
-    cp /cdrom/3KeyCompany/ansible.cfg /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/inventory.conf /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/czertainly-branding.yml /target/etc/ansible/playbooks && \
-    cp /cdrom/3KeyCompany/czertainly.yml /target/etc/ansible/playbooks && \
-    cp /cdrom/3KeyCompany/ansible-init.sh /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/customize4developer.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/czertainly-tui.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/update-hostname.sh /target/usr/local/bin/ && \
-    cp /cdrom/3KeyCompany/exec-tui /target/etc/ansible/ && \
-    cp /cdrom/3KeyCompany/vars_database.sample.yml /target/etc/ansible/vars/database.yml && \
-    cp /cdrom/3KeyCompany/vars_docker.sample.yml /target/etc/ansible/vars/docker.yml && \
-    cp /cdrom/3KeyCompany/vars_czertainly.sample.yml /target/etc/ansible/vars/czertainly.yml && \
-    cp /cdrom/3KeyCompany/vars_ingress.sample.yml /target/etc/ansible/vars/ingress.yml && \
-    cp /cdrom/3KeyCompany/vars_proxy.sample.yml /target/etc/ansible/vars/proxy.yml && \
-    cp /cdrom/3KeyCompany/vars_trustedCA.sample.yml /target/etc/ansible/vars/trustedCA.yml && \
-    cp /cdrom/3KeyCompany/sudoers.d.czertainly /target/etc/sudoers.d/czertainly && \
-    chmod +x /target/etc/ansible/ansible-init.sh && \
-    in-target /etc/ansible/ansible-init.sh
+    cp /cdrom/CZERTAINLY/authorized_keys /target/home/czertainly/.ssh && \
+    cp /cdrom/CZERTAINLY/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
+    cp /cdrom/CZERTAINLY/appliance-init.sh /target/tmp/ && \
+    chmod +x /target/tmp/appliance-init.sh && \
+    in-target /tmp/appliance-init.sh

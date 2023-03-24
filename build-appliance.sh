@@ -16,7 +16,7 @@ ansible-playbook -i inventory.conf -e "@${params}" build-iso-image.yaml
 echo ""
 echo ">> CREATING VBOX MACHINE <<"
 echo ""
-VERSION=`cat tmp/iso/3KeyCompany/czertainly_appliance_version`
+VERSION=`cat tmp/iso/CZERTAINLY/czertainly_appliance_version`
 NAME="czertainly-appliance-$VERSION".`date "+%g%m%d.%H%M%S"`
 ISO="tmp/czertainly-appliance-netinstall-$VERSION.iso"
 MAX_INST_TIME=$[360*60]
