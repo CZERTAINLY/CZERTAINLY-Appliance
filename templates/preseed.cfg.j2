@@ -57,10 +57,10 @@ d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
 d-i preseed/late_command string \
     in-target mkdir /home/czertainly/.ssh && \
-{% if appliance_develop_version is defined and appliance_develop_version %}
     in-target chown -R czertainly.czertainly /home/czertainly/.ssh && \
-{% endif %}
+{% if appliance_develop_version is defined and appliance_develop_version %}
     cp /cdrom/CZERTAINLY/authorized_keys /target/home/czertainly/.ssh && \
+{% endif %}
     cp /cdrom/CZERTAINLY/czertainly_appliance_version /target/etc/czertainly_appliance_version && \
     cp /cdrom/CZERTAINLY/appliance-init.sh /target/tmp/ && \
     chmod +x /target/tmp/appliance-init.sh && \
