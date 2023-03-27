@@ -1,18 +1,7 @@
 ---
-appliance_version: 0.5.5
-ansible_roles:
-  branding:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Branding.git
-    branch: main
-  host_config:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-Host-Config.git
-    branch: main
-  rke2:
-    repo: https://github.com/3KeyCompany/CZERTAINLY-Appliance-RKE2.git
-    branch: main
-  czertainly:
-    repo: https://github.com/3KeyCompany/ansible-role-czertainly.git
-    branch: main
+appliance_version: 2.6.0
+czertainly_deb_repository: "http://deb.czertainly.com/ bullseye main"
+czertainly_deb_key: "http://deb.czertainly.com/deb.czertainly.com.gpg"
 czertainly_netinst_image: czertainly-appliance-netinstall-{{ appliance_version }}.iso
 wdir: tmp
 debian_netinst_image:
