@@ -71,6 +71,8 @@
     - authorized_keys
   register: c3k_files
 
+- debug: var=appliance_develop_version
+
 - name: copy CZERTAINLY templated files
   ansible.builtin.template:
     src: "{{ item }}.j2"
