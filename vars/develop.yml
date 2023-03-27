@@ -1,5 +1,6 @@
 ---
 appliance_version: 2.6.0.rc10
+appliance_develop_version: true
 czertainly_deb_repository: "http://deb.czertainly.com/ develop main"
 czertainly_deb_key: "http://deb.czertainly.com/deb.czertainly.com.gpg"
 czertainly_netinst_image: czertainly-appliance-netinstall-{{ appliance_version }}.iso
