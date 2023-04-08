@@ -86,11 +86,11 @@
 - name: build customized install ISO
   ansible.builtin.command:
     chdir: "{{ wdir }}/iso"
-    cmd: genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinst_image }}" .
+    cmd: mkisofs -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o "../{{ czertainly_netinst_image }}" .
   when: (not our_image.stat.exists) or isolinux.changed or gtk.changed or c3k_files.changed or c3k_tfiles.changed
   register: build
 
 - name: isohybrid our customized install ISO
   ansible.builtin.command:
-    cmd: isohybrid "{{ wdir }}/{{ czertainly_netinst_image }}"
+    cmd: mkhybrid "{{ wdir }}/{{ czertainly_netinst_image }}"
   when: build.changed

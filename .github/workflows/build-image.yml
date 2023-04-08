@@ -10,8 +10,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Add dependencies
+      - name: Install Ansible
         run: brew install ansible
+
+      - name: Install mkisofs
+        run: brew install mkisofs
 
       # - name: Add dependencies
       #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
