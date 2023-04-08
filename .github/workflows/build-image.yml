@@ -10,6 +10,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: list interfaces
+        run: networksetup -listallhardwareports
+
       - name: Install Ansible
         run: brew install ansible
 
