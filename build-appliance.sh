@@ -68,9 +68,13 @@ NOW=`date +'%s'`;
 INST_RUNTIME=$[$NOW-$INST_START];
 echo ">> AUTO INSTALL FINISHED IN $INST_RUNTIME sec";
 
+ls -lRta "/Users/runner/VirtualBox VMs/"
+
 echo ""
 echo ">> EXPORTING VBOX TO OVA <<"
 echo ""
 
 VBoxManage export $NAME --output tmp/$NAME.ova --ovf10 --manifest
 echo "::set-output name=APPLIANCE_FILENAME::tmp/$NAME.ova"
+
+ls -lRta tmp
