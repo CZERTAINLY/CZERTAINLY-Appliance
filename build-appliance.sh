@@ -28,7 +28,7 @@ VBoxManage modifyvm $NAME --ioapic on --acpi on
 VBoxManage modifyvm $NAME --memory 8192 --cpus 4 --pae=off
 #VBoxManage modifyvm $NAME --audio=pulse --audiocodec=ad1980 --audioout=on
 VBoxManage modifyvm $NAME --graphicscontroller vmsvga --vram 16
-VBoxManage modifyvm $NAME --nic1 bridged --bridgeadapter1=eth0
+VBoxManage modifyvm $NAME --nic1 bridged --bridgeadapter1=en0
 #VBoxManage modifyvm $NAME --mouse=usbtablet --usbehci=on --usbohci=on
 VBoxManage modifyvm $NAME --rtcuseutc=on
 
