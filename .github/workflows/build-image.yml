@@ -17,6 +17,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install virtualbox-6.1
 
+      - name: Add dependencies
+        run: sudo libarchive-tools genisoimage syslinux-utils
+
       - name: Build package
         run: ./build-appliance.sh
 
