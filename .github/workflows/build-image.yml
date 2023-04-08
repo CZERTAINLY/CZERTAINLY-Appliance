@@ -33,9 +33,14 @@ jobs:
         run: ./build-appliance.sh
         id: build
 
-
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v3
         with:
           name: appliance-ova-file
           path: "${{ steps.build.outputs.APPLIANCE_FILENAME }}"
+
+      - name: Save tmp directory
+        uses: actions/upload-artifact@v3
+        with:
+          name: appliance-tmp-directory
+          path: tmp
