@@ -31,4 +31,11 @@ jobs:
 
       - name: Build package
         run: ./build-appliance.sh
+        id: build
 
+
+      - name: Save builded CZERTAINLY Appliance OVA file
+        uses: actions/upload-artifact@v3
+        with:
+          name: appliance-ova-file
+          path: "${{ steps.build.outputs.APPLIANCE_FILENAME }}"

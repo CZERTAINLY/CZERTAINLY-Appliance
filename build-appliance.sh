@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 set -e
 
@@ -73,3 +73,4 @@ echo ">> EXPORTING VBOX TO OVA <<"
 echo ""
 
 VBoxManage export $NAME --output tmp/$NAME.ova --ovf10 --manifest
+echo "::set-output name=APPLIANCE_FILENAME::tmp/$NAME.ova"
