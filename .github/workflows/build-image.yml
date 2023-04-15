@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,15 +22,15 @@ jobs:
       # - name: Add dependencies
       #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
 
-      # - name: Add VirtualBox
-      #   run: |
-      #     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
-      #     wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
-      #     sudo apt update
-      #     sudo apt install virtualbox-6.1
+      - name: Add VirtualBox
+         run: |
+           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
+           wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
+           sudo apt update
+           sudo apt install virtualbox
 
       - name: Build package
-        run: ./build-appliance.sh
+        run: ./build-appliance
         id: build
 
       - name: Save builded CZERTAINLY Appliance OVA file
@@ -39,8 +39,8 @@ jobs:
           name: appliance-ova-file
           path: "${{ steps.build.outputs.APPLIANCE_FILENAME }}"
 
-      - name: Save tmp directory
-        uses: actions/upload-artifact@v3
-        with:
-          name: appliance-tmp-directory
-          path: tmp
+      # - name: Save tmp directory
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: appliance-tmp-directory
+      #     path: tmp
