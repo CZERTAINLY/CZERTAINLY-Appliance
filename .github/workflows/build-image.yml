@@ -23,11 +23,11 @@ jobs:
       #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
 
       - name: Add VirtualBox
-         run: |
-           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
-           wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
-           sudo apt update
-           sudo apt install virtualbox
+        run: |
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
+          wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
+          sudo apt update
+          sudo apt install virtualbox
 
       - name: Build package
         run: ./build-appliance
