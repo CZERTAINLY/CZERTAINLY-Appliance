@@ -23,7 +23,7 @@ jobs:
       #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
 
       - name: Add qemu-nbd
-        run: apt install qemu-utils
+        run: sudo apt install qemu-utils
 
       - name: Add VirtualBox
         run: |
