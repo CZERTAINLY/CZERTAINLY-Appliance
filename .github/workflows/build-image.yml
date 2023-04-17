@@ -30,7 +30,7 @@ jobs:
           sudo apt install virtualbox
 
       - name: Build package
-        run: sudo ./build-appliance
+        run: sudo bash -x ./build-appliance
         id: build
 
       - name: Save builded CZERTAINLY Appliance OVA file
