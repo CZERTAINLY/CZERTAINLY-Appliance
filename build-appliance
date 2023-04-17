@@ -40,6 +40,12 @@ FQDN="czertainly.local"
 NAME="czertainly-appliance-$APPLIANCE_VERSION".`date "+%g%m%d.%H%M%S"`
 QCOW2_DISK_FILE="$WDIR/$NAME.qcow2"
 
+if [ ! -d "$WDIR" ]
+then
+    echo ">>>> creating working directory"
+    mkdir -p $WDIR
+fi
+
 echo ">>>> cleaning up posible remains from previous run"
 unmount_nbd
 
