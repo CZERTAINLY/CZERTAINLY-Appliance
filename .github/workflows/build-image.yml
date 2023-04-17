@@ -22,15 +22,12 @@ jobs:
       # - name: Add dependencies
       #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
 
-      - name: Add qemu-nbd
-        run: sudo apt install qemu-utils
-
-      - name: Add VirtualBox
+      - name: Add VirtualBox and other dependencies
         run: |
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
           wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
           sudo apt update
-          sudo apt install virtualbox
+          sudo apt install virtualbox qemu-utils debootstrap dosfstools
 
       - name: Build package
         run: sudo bash -x ./build-appliance
