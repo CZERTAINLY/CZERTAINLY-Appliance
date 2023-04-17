@@ -18,7 +18,7 @@ unmount_nbd () {
 if [ "x$BUILD_PARAMS" == "x" ]
 then
     echo ">>>> BUILD_PARAMS undefined, trying to source var/main"
-    . var/main
+    . var/develop
 else
     echo ">>>> sourcing parameters from $BUILD_PARAMS"
     . $BUILD_PARAMS
@@ -294,6 +294,6 @@ echo ">>>> exporting VirtualBox Virtual Appliance into ova file"
 VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
 
 echo ">>>> removing VirtualBox Virtual Appliance into ova file"
-VBoxManage unregistervm "$NAME" --delete-all
+VBoxManage unregistervm "$NAME" --delete --delete-all
 
 echo "::set-output name=APPLIANCE_FILENAME::$WDIR/$NAME.ova"
