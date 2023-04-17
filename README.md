@@ -4,23 +4,22 @@ Builder of [CZERTAINLY Appliance](https://docs.czertainly.com/docs/installation-
 
 ## Prerequisites
 
-* a Linux system / - tested on GNU Debian/Linux 11 (Bullseye). In case of VPS you need suport for nested virtualization.
+* a Debian based Linux system with **root access**  - tested on GNU Debian/Linux 11 (Bullseye). Root access is needed for `debbootstrap`, mounting qemu disk format, formating disk image - most of task is run as root.
 * `git` for cloning this repo
-* VirtualBox 6.1 from [Debian Fast Track](https://fasttrack.debian.net/) is fine and 7.0 from Oracle is also tested
-* Ansible 2.10
-* `libarchive-tools` is required for bsdtar which capable for extracting ISO image
-* `genisoimage` is needed for reasembling netinstall image after altering it
-* `isohybrid` is needed for booting ISO image like from HDD
+* VirtualBox 7.0 (6.0 version doesn't have `--delete-all` option otherwise script should run)
+* `qemu-img` and `qemu-nbd` from `qemu-utils`, complete Qemu installation isn't needed
+* `debootstrap`
+* `dosfstools` for creating FAT partition with EFI stuff
 
 In short:
-`apt install git virtualbox virtualbox-ext-pack ansible libarchive-tools genisoimage syslinux-utils`
+`apt install git virtualbox qemu-utils debbootstrap dosfstools`
 
 ## Building
 
 ```
 git clone https://github.com/3KeyCompany/CZERTAINLY-Appliance.git
 cd CZERTAINLY-Appliance
-./build-appliance.sh
+./build-appliance
 ```
 Finished apliance is exported into file `tmp/czertainly-appliance-$APPLIANCEVERSION."%g%m%d.%H%M%S.ova`. The proces takes about 7 minutes on i7-6700 CPU @ 3.40GHz.
 
@@ -30,9 +29,9 @@ Appliance comes with preconfigured Debian system. You need to initialiaze rke2 c
 
 ## Tips for developers
 
-By default Appliance builder uses parameters from [`vars/main.yml`](./vars/main.yml) you can make your own modifications to that file and pass it as first argument of the builder, for example:
+By default Appliance builder uses parameters from [`vars/develop`](./vars/develop) you can make your own modifications to that file and pass it as first argument of the builder, for example:
 ```
-./build-appliance.sh vars/develop.yml
+sudo BUILD_PARAMS=vars/local bash ./build-appliance
 ```
 Playbook for CZERTAINLY installation depends on following Ansible
 roles:
@@ -61,6 +60,6 @@ ANSIBLE_CONFIG=/etc/czertainly-ansible/ansible.cfg ansible-playbook /etc/czertai
 
 ## Notes
 
-For cleaning working directory you can use `rm -rf tmp` or if you are on slow line maybe you would like more [specific command](build-appliance.sh#L5) which keeps offical Debian ISO image in place to save bandwith.
+Originaly was the appliance builder based on `preseed.cfg` file which offical way for customizing Debian instalation. It is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html), but can be sometimes quite tricky to get it working correctly. Main problem with this aproach was that it required VT-x instructions, for full virtualization. That is not available in Ubuntu based GitHub runners. With some modifications it was possible run it on MacOS based runners, but building process was taking to long and often was terminated by GitHub after 6hours. Those modification for MacOS was replace `genisoimage`=>`mkisofs` and `isohybrid`=>`mkhybrid` which are luckyily dropin replacements. 
 
-Debian installation process can be automated by [preseed.cfg](./templates/preseed.cfg.j2) file which is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html). Or you can run [network install from minimal ISO](https://www.debian.org/CD/netinst/) and inside of newly installed image run `debconf-get-selections --installer`. And final tip is to try unantend install using VirtualBox, and examine storage of virtual servers, preseed and other needed configs are available there.
+Actual way of building the appliance is havily based on blog post [Building Debian VMs with debootstrap](https://blog.entek.org.uk/technology/2020/06/06/building-debian-vms-with-debootstrap.html). This way of building the appliance is much faster and it runs even on Ubuntu runners on GitHub.
