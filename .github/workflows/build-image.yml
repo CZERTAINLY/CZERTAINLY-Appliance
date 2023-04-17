@@ -10,18 +10,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: list interfaces
-      #   run: networksetup -listallhardwareports
-
-      # - name: Install Ansible
-      #   run: brew install ansible
-
-      # - name: Install mkisofs
-      #   run: brew install cdrtools
-
-      # - name: Add dependencies
-      #   run: sudo apt install libarchive-tools genisoimage syslinux-utils
-
       - name: Add VirtualBox and other dependencies
         run: |
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
@@ -33,6 +21,12 @@ jobs:
         run: sudo bash ./build-appliance
         id: build
 
+      # GITHUB_OUTPUT is in Github Action filled with temporary
+      # filename to store output. Variables are not passed thought
+      # sudo. One can use `--preserve-env=` but when script is
+      # executed localy, ie. without github enviroment it will
+      # fail. So I think that it is better to use our own temp file
+      # for name of builded appliance.
       - name: Read filename of builded appliance
         run: echo APPLIANCE_FILENAME=`cat tmp/appliance-last-name` >> $GITHUB_OUTPUT
         id: name
@@ -41,10 +35,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: appliance-ova-file
-          path: "${{ steps.name.outputs.APPLIANCE_FILENAME }}"
-
-      # - name: Save tmp directory
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: appliance-tmp-directory
-      #     path: tmp
+          path: "${{ steps.name.build.APPLIANCE_FILENAME }}"
