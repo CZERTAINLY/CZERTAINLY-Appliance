@@ -29,10 +29,10 @@ jobs:
       # for name of builded appliance.
       - name: Read filename of builded appliance
         run: echo APPLIANCE_FILENAME=`cat tmp/appliance-last-name` >> $GITHUB_OUTPUT
-        id: name
+        id: appliance_name
 
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v3
         with:
           name: appliance-ova-file
-          path: "${{ steps.name.build.APPLIANCE_FILENAME }}"
+          path: "${{ steps.appliance_name.outputs.APPLIANCE_FILENAME }}"
