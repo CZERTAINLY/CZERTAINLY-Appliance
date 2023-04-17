@@ -34,7 +34,7 @@ jobs:
         id: build
 
       - name: Read filename of builded appliance
-        run: cat tmp/appliance-last-name
+        run: echo APPLIANCE_FILENAME=`cat tmp/appliance-last-name` >> $GITHUB_OUTPUT
         id: name
 
       - name: Save builded CZERTAINLY Appliance OVA file

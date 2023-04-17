@@ -306,7 +306,7 @@ VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
 echo ">>>> removing VirtualBox Virtual Appliance into ova file"
 VBoxManage unregistervm "$NAME" --delete --delete-all
 
-ls -l "$WDIR"
-chmod 644 "$WDIR/$NAME.ova"
 echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
+chmod 644 "$WDIR/$NAME.ova"
+ls -l "$WDIR"
 
