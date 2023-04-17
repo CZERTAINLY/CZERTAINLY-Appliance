@@ -21,11 +21,27 @@ unmount_nbd () {
 
 if [ "x$BUILD_PARAMS" == "x" ]
 then
-    echo ">>>> BUILD_PARAMS undefined, trying to source var/main"
-    . vars/develop
-else
+    echo ">>>> BUILD_PARAMS undefined"
+    BUILD_PARAMS='vars/develop'
+
+    if [ "x$GITHUB_REF_NAME" != "x" ]
+    then
+	PARAMS="vars/$GITHUB_REF_NAME"
+	if [ -e "$PARAMS" ]
+	then
+	    echo ">>>> will use $PARAMS as BUILD_PARAMS"
+	    BUILD_PARAMS="$PARAMS"
+	fi
+    fi
+fi
+
+if [ -e "$BUILD_PARAMS" ]
+then
     echo ">>>> sourcing parameters from $BUILD_PARAMS"
     . $BUILD_PARAMS
+else
+    echo ">>>> file $BUILD_PARAMS doesn't exists, terminating"
+    exit 1
 fi
 
 SWAP_SIZE="1024"
