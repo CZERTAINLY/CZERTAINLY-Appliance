@@ -18,7 +18,7 @@ unmount_nbd () {
 if [ "x$BUILD_PARAMS" == "x" ]
 then
     echo ">>>> BUILD_PARAMS undefined, trying to source var/main"
-    . var/develop
+    . vars/develop
 else
     echo ">>>> sourcing parameters from $BUILD_PARAMS"
     . $BUILD_PARAMS
