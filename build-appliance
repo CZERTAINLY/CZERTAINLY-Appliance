@@ -309,4 +309,4 @@ VBoxManage unregistervm "$NAME" --delete --delete-all
 ls -l "$WDIR"
 chmod 644 "$WDIR/$NAME.ova"
 
-echo "{APPLIANCE_FILENAME}={$WDIR/$NAME.ova}" >> $GITHUB_ENV
+echo "APPLIANCE_FILENAME=$WDIR/$NAME.ova" >> $GITHUB_ENV
