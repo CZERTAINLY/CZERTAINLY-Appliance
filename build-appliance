@@ -3,8 +3,6 @@
 # fail on any error
 set -e
 
-echo "TOHLE_ME=nezajima" >> $GITHUB_OUTPUT
-
 # unmount a appliance components
 unmount_nbd () {
     for MNT in "$TARGET/boot/efi" "$TARGET/dev/shm" "$TARGET/dev" "$TARGET/proc" "$TARGET/sys" "$TARGET"
@@ -310,5 +308,5 @@ VBoxManage unregistervm "$NAME" --delete --delete-all
 
 ls -l "$WDIR"
 chmod 644 "$WDIR/$NAME.ova"
+echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
 
-echo "APPLIANCE_FILENAME=$WDIR/$NAME.ova" >> $GITHUB_OUTPUT

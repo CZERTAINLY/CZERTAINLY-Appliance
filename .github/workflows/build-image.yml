@@ -33,11 +33,15 @@ jobs:
         run: sudo bash ./build-appliance
         id: build
 
+      - name: Read filename of builded appliance
+        run: cat tmp/appliance-last-name
+        id: name
+
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v3
         with:
           name: appliance-ova-file
-          path: "${{ steps.build.outputs.APPLIANCE_FILENAME }}"
+          path: "${{ steps.name.outputs.APPLIANCE_FILENAME }}"
 
       # - name: Save tmp directory
       #   uses: actions/upload-artifact@v3
