@@ -12,9 +12,11 @@ unmount_nbd () {
 	    umount "$MNT" && echo ">>>> $MNT unmouted"
 	fi
     done
-    ls -l "$NBD_DEV" || true
-    which qemu-nbd
-    [[ -e "$NBD_DEV" ]] && qemu-nbd -d "$NBD_DEV"
+    if [ -e "$NBD_DEV" ]
+    then
+	echo ">>>> $NBD_DEV exists unmouting"
+	qemu-nbd -d "$NBD_DEV"
+    fi
 }
 
 if [ "x$BUILD_PARAMS" == "x" ]
