@@ -5,7 +5,7 @@ set -e
 
 # unmount a appliance components
 unmount_nbd () {
-    for MNT in "$TARGET/boot/efi" "$TARGET/dev/shm" "$TARGET/dev" "$TARGET/proc" "$TARGET/sys" "$TARGET"
+    for MNT in "$TARGET/dev/shm" "$TARGET/dev" "$TARGET/proc" "$TARGET/sys" "$TARGET"
     do
 	if mount | grep $MNT > /dev/null
 	then
@@ -15,6 +15,7 @@ unmount_nbd () {
     if [ -e "$NBD_DEV" ]
     then
 	echo ">>>> $NBD_DEV exists unmouting"
+	sync
 	qemu-nbd -d "$NBD_DEV"
     fi
 }
@@ -46,7 +47,6 @@ fi
 
 SWAP_SIZE="1024"
 DISK_SIZE="50G"
-EFI_SIZE="384"
 NBD_DEV="/dev/nbd0"
 TARGET="/mnt/target"
 SUITE="bullseye"
@@ -72,14 +72,10 @@ modprobe nbd
 
 qemu-nbd -c $NBD_DEV $QCOW2_DISK_FILE
 
-PARTED_COMMANDS="mklabel gpt \
-mkpart primary fat32 1MiB $(( 1 + EFI_SIZE ))MiB \
-name 1 uefi \
-set 1 esp on \
-mkpart primary linux-swap $(( 1 + EFI_SIZE ))MiB $(( 1 + EFI_SIZE + SWAP_SIZE ))MiB \
-name 2 swap \
-mkpart primary ext4 $(( 1 + EFI_SIZE + SWAP_SIZE ))MiB -0 \
-name 3 root"
+PARTED_COMMANDS="mklabel msdos \
+mkpart primary linux-swap $(( 1 ))MiB $(( 1 + SWAP_SIZE ))MiB \
+mkpart primary ext4 $(( 1 + SWAP_SIZE ))MiB -0 \
+set 2 boot on"
 
 echo $PARTED_COMMANDS
 
@@ -89,25 +85,19 @@ parted -s -a optimal -- $NBD_DEV $PARTED_COMMANDS
 sleep 1;
 [[ -e ${NBD_DEV}p1 ]] || sleep 15;
 
-mkfs -t fat -F 32 -n EFI ${NBD_DEV}p1
+mkswap -L swap ${NBD_DEV}p1
 
-mkswap -L swap ${NBD_DEV}p2
-
-mkfs -t ext4 -L root ${NBD_DEV}p3
+mkfs -t ext4 -L root ${NBD_DEV}p2
 
 ROOT_UUID="$(blkid | grep "^${NBD_DEV}p[0-9]\+:" | grep ' LABEL="root" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
 SWAP_UUID="$(blkid | grep "^${NBD_DEV}p[0-9]\+:" | grep ' LABEL="swap" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
-EFI_UUID="$(blkid | grep "^${NBD_DEV}p[0-9]\+:" | grep ' LABEL="EFI" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
 
 echo ">>>> Root: $ROOT_UUID"
 echo ">>>> swap: $SWAP_UUID"
-echo ">>>> EFI: $EFI_UUID"
 
 echo ">>>> mount new system on $TARGET"
 [[ -d "$TARGET" ]] || mkdir -p "$TARGET"
 mount $ROOT_UUID "$TARGET"
-mkdir -p "$TARGET/boot/efi"
-mount $EFI_UUID "$TARGET/boot/efi"
 
 echo ">>>> bootstraping new Debian system"
 /usr/sbin/debootstrap --arch amd64 $SUITE "$TARGET" http://deb.debian.org/debian
@@ -128,7 +118,6 @@ cat - > "$TARGET/etc/fstab" <<EOF
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 $SWAP_UUID	none   		swap 	sw  		  0       0
 $ROOT_UUID	/		ext4 	errors=remount-ro 0	  1
-$EFI_UUID	/boot/efi	vfat 	defaults	  0	  1
 EOF
 cat "$TARGET/etc/fstab"
 
@@ -203,8 +192,8 @@ dpkg-reconfigure -f noninteractive tzdata
 
 echo ">>>>>> configuring locales and keyboard"
 debconf-set-selections <<S2EOF
-locales locales/locales_to_be_generated multiselect en_EN.UTF-8 UTF-8
-locales locales/default_environment_locale select en_US.UTF-8
+locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8
+locales locales/default_environment_locale select en_US
 keyboard-configuration keyboard-configuration/layoutcode string us
 S2EOF
 # Stop anything overriding debconf's settings
@@ -218,15 +207,12 @@ echo ">>>>>> installing kernel"
 apt-get -qq -y install linux-image-amd64
 
 echo ">>>>>> installing bootloader"
-apt-get -qq -y install grub-efi-amd64
-grub-install --target=x86_64-efi
+apt-get -qq -y install grub2
+grub-install ${NBD_DEV}
 echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
 sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0"/' /etc/default/grub
 update-grub
 
-echo ">>>>>> copying fallback bootloader"
-mkdir -p /boot/efi/EFI/BOOT
-cp /boot/efi/EFI/debian/fbx64.efi /boot/efi/EFI/BOOT/bootx64.efi
 
 echo ">>>>>> install CZERTAINLY dependencies"
 # sudo is needed for TUI system operations
@@ -239,7 +225,7 @@ INSTALL="\$INSTALL openssh-server"
 INSTALL="\$INSTALL dbus"
 
 # suport for correct certiticates validation
-INSTALL="\$INSTALL ssl-cert ca-certificates apt-transport-https"
+INSTALL="\$INSTALL ssl-cert ca-certificates"
 
 # this should be part of czertainly-appliance-tool dependencies
 INSTALL="\$INSTALL ansible python3-apt python3-kubernetes git jq dialog python3"
@@ -276,6 +262,11 @@ ansible-galaxy collection install kubernetes.core
 # Appliance branding
 export ANSIBLE_CONFIG=/etc/czertainly-ansible/ansible.cfg
 ansible-playbook /etc/czertainly-ansible/playbooks/czertainly-branding.yml
+
+echo ">>>>>> clean apt cache"
+apt-get -qq -y remove --purge tasksel tasksel-data busybox
+apt-get -qq -y autoremove
+apt-get -qq -y clean
 EOF
 
 echo ">>>> initalitialize appliance"
@@ -296,22 +287,14 @@ unmount_nbd
 PRIMARY_INTERFACE=`route | grep '^default' | grep -o '[^ ]*$'`
 
 echo ">>>> creating VirtualBox Virtual Appliance"
-VBoxManage createvm --name "$NAME" --ostype Debian_64 --register
+VBoxManage createvm --name "$NAME" --ostype Debian11_64 --register
 
 VBoxManage modifyvm "$NAME" --ioapic on --acpi on
 VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
-VBoxManage modifyvm "$NAME" --audio=pulse --audiocodec=ad1980 --audioout=on
 VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 16
 VBoxManage modifyvm "$NAME" --nic1 bridged --bridgeadapter1=$PRIMARY_INTERFACE
-VBoxManage modifyvm "$NAME" --firmware efi
-#VBoxManage modifyvm $NAME --mouse=usbtablet --usbehci=on --usbohci=on
 VBoxManage modifyvm "$NAME" --rtcuseutc=on
 
-#STORAGE=`VBoxManage showvminfo $NAME | grep 'Config file' | sed 's/Config file: *//' | sed 's/[^/]*$//'`
-#
-#VBoxManage createhd --filename "${STORAGE}disk.vdi" --size 20000 --format VDI
-#VBoxManage storagectl $NAME --name "IDE" --add ide --controller PIIX4 --portcount=2
-#VBoxManage storageattach $NAME  --storagectl "IDE" --port 1 --device 0 --type dvddrive --medium  $ISO
 VBoxManage storagectl "$NAME" --name "SATA" --add sata --controller IntelAhci --portcount=1
 VBoxManage storageattach "$NAME"  --storagectl "SATA" --port 0 --device 0 --type hdd --medium $QCOW2_DISK_FILE
 VBoxManage modifyvm "$NAME" --boot1 disk --boot2 none --boot3 none --boot4 none
@@ -319,10 +302,9 @@ VBoxManage modifyvm "$NAME" --boot1 disk --boot2 none --boot3 none --boot4 none
 echo ">>>> exporting VirtualBox Virtual Appliance into ova file"
 VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
 
-echo ">>>> removing VirtualBox Virtual Appliance into ova file"
+echo ">>>> removing VirtualBox Virtual Appliance"
 VBoxManage unregistervm "$NAME" --delete --delete-all
 
 echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
 ls -l "$WDIR"
-
