@@ -294,7 +294,11 @@ VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
 VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 16
 VBoxManage modifyvm "$NAME" --nic1 bridged --bridgeadapter1=$PRIMARY_INTERFACE
 VBoxManage modifyvm "$NAME" --rtcuseutc=on
-VBoxManage modifyvm "$NAME" --audio-driver none
+# VBoxManage is complaining that "Warning: --audio is deprecated and
+# will be removed soon. Use --audio-driver instead!" but
+# --audio-driver produces ova with audio enabled and import into
+# VMware fails.
+VBoxManage modifyvm "$NAME" --audio none
 
 VBoxManage storagectl "$NAME" --name "SATA" --add sata --controller IntelAhci --portcount=1
 VBoxManage storageattach "$NAME"  --storagectl "SATA" --port 0 --device 0 --type hdd --medium $QCOW2_DISK_FILE
@@ -304,7 +308,7 @@ echo ">>>> exporting VirtualBox Virtual Appliance into ova file"
 VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
 
 echo ">>>> removing VirtualBox Virtual Appliance"
-#VBoxManage unregistervm "$NAME" --delete --delete-all
+VBoxManage unregistervm "$NAME" --delete --delete-all
 
 echo ">>>> extracting appliance"
 ls -l "$WDIR"
