@@ -40,14 +40,14 @@ foreach my $oss ($root->getElementsByTagNameNS($xmlns, 'OperatingSystemSection')
     }
 };
 
-# change text value of /Envelope/VirtualSystem/VirtualHardwareSection from virtualbox-2.2 to vmx-20
+# change text value of /Envelope/VirtualSystem/VirtualHardwareSection from virtualbox-2.2 to vmx-7
 foreach my $vhs ($root->getElementsByTagNameNS($xmlns_vssd, 'VirtualSystemType')) {
     my $value = $vhs->textContent;
     die "Node ".$vhs->nodePath."/".$vhs->nodeName.
 	" have different value than expected virtualbox-2.2. Terminating" if ($value ne 'virtualbox-2.2');
 
     $vhs->removeChildNodes;
-    $vhs->appendText('vmx-20')
+    $vhs->appendText('vmx-7')
 };
 
 print $xml->toString;
