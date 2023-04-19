@@ -310,6 +310,11 @@ VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
 echo ">>>> removing VirtualBox Virtual Appliance"
 VBoxManage unregistervm "$NAME" --delete --delete-all
 
+# VitrualBox is marking this virtual system as virtualbox-2.2 which is
+# for some reason problem for VMplayer. More info
+# https://www.virtualbox.org/ticket/7982 Here we extract produced ova,
+# modify virtual system specification, recreate manifest and tar it
+# again back into ova.
 echo ">>>> extracting appliance"
 ls -l "$WDIR"
 cd $WDIR
