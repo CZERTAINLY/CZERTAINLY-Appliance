@@ -34,5 +34,5 @@ jobs:
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v3
         with:
-          name: appliance-ova-file
+          name: czertainly-appliance-ova-file
           path: "${{ steps.appliance_name.outputs.APPLIANCE_FILENAME }}"
