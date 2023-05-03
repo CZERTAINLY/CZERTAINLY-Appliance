@@ -30,7 +30,17 @@ foreach my $oss ($root->getElementsByTagNameNS($xmlns, 'OperatingSystemSection')
     # add attributes  ovf:version="11" vmw:osType="debian11_64Guest"
     # to /Envelope/VirtualSystem/OperatingSystemSection
     $oss->setAttributeNS($xmlns, 'version', '11');
-    $oss->setAttributeNS($xmlns_vmw, 'osType', 'debian11_64Guest');
+    $oss->setAttributeNS($xmlns_vmw, 'osType', 'otherLinux64Guest');
+
+    # Add name for vmware. Yes it neededs to have Info element as first.
+    my $virtualSystem = $oss->parentNode;
+    my $name = $virtualSystem->getAttributeNS($xmlns, 'id');
+    my $nameNode = XML::LibXML::Element->new("Name");
+    my $nameNodeText = XML::LibXML::Text->new($name);
+    my $newLine = XML::LibXML::Text->new("\n");
+    $nameNode->addChild($nameNodeText);
+    $virtualSystem->insertAfter($nameNode,$virtualSystem->firstChild->nextNonBlankSibling);
+    $virtualSystem->insertBefore($newLine,$nameNode);
 
     # remove all subelements from /Envelope/VirtualSystem/OperatingSystemSection except Info
     foreach my $child ($oss->childNodes()) {
@@ -48,8 +58,9 @@ foreach my $vhs ($root->getElementsByTagNameNS($xmlns_vssd, 'VirtualSystemType')
 
     $vhs->removeChildNodes;
     # https://kb.vmware.com/s/article/1003746
-    # vmx-10 means ESXi 5.5 which is expired 4y ago
-    $vhs->appendText('vmx-10');
+    # vmx-13 means ESXi 6.5 which is expired 15 Oct 2022
+    # https://endoflife.date/esxi
+    $vhs->appendText('vmx-13');
 };
 
 print $xml->toString;
