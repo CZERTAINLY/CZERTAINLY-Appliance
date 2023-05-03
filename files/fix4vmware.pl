@@ -48,6 +48,7 @@ foreach my $vhs ($root->getElementsByTagNameNS($xmlns_vssd, 'VirtualSystemType')
 
     $vhs->removeChildNodes;
     # https://kb.vmware.com/s/article/1003746
+    # vmx-10 means ESXi 5.5 which is expired 4y ago
     $vhs->appendText('vmx-10');
 };
 

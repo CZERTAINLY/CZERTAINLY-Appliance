@@ -287,7 +287,7 @@ unmount_nbd
 PRIMARY_INTERFACE=`route | grep '^default' | grep -o '[^ ]*$'`
 
 echo ">>>> creating VirtualBox Virtual Appliance"
-VBoxManage createvm --name "$NAME" --ostype Debian11_64 --register
+VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
 
 VBoxManage modifyvm "$NAME" --ioapic on --acpi on
 VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
