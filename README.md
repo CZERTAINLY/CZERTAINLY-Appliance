@@ -55,11 +55,11 @@ ANSIBLE_CONFIG=/etc/czertainly-ansible/ansible.cfg ansible-playbook /etc/czertai
 
 * VirtualBox 6.1
 * VirtualBox 7.0.4 / working environment
-* VMPlayer 16.2.4 / during import you have to click 'Retry' button to relax OVA specification to VMPlayer accept image
-* VMPlayer 17.0.0 / same as above
+* VMPlayer 16.2.4
+* VMPlayer 17.0.0
 
 ## Notes
 
-Originaly was the appliance builder based on `preseed.cfg` file which offical way for customizing Debian instalation. It is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html), but can be sometimes quite tricky to get it working correctly. Main problem with this aproach was that it required VT-x instructions, for full virtualization. That is not available in Ubuntu based GitHub runners. With some modifications it was possible run it on MacOS based runners, but building process was taking to long and often was terminated by GitHub after 6hours. Those modification for MacOS was replace `genisoimage`=>`mkisofs` and `isohybrid`=>`mkhybrid` which are luckyily dropin replacements. 
+Originaly was the appliance builder based on `preseed.cfg` file which offical way for customizing Debian instalation. It is [documented](https://www.debian.org/releases/stable/amd64/apbs02.en.html), but can be sometimes quite tricky to get it working correctly. Main problem with this aproach was that it required VT-x instructions, for full virtualization. That is not available in Ubuntu based GitHub runners. With some modifications it was possible run it on MacOS based runners, but building process was taking to long and often was terminated by GitHub after 6hours. Those modification for MacOS was replace `genisoimage`=>`mkisofs` and `isohybrid`=>`mkhybrid` which are luckyily dropin replacements.
 
 Actual way of building the appliance is havily based on blog post [Building Debian VMs with debootstrap](https://blog.entek.org.uk/technology/2020/06/06/building-debian-vms-with-debootstrap.html). This way of building the appliance is much faster and it runs even on Ubuntu runners on GitHub.
