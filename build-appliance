@@ -324,7 +324,7 @@ echo ">>>> apply vmware fix"
 mv "$NAME.ovf" "$NAME.ovf.orig"
 ../files/fix4vmware.pl "$NAME.ovf.orig" > "$NAME.ovf"
 diff "$NAME.ovf.orig" "$NAME.ovf" || true
-sha256sum --tag "$NAME.ovf" "$NAME.ovf.orig" "$NAME"*.vmdk | sed "s/^SHA256 */SHA256/" | tee "$NAME.mf"
+sha256sum --tag "$NAME.ovf" "$NAME"*.vmdk | sed "s/^SHA256 */SHA256/" | tee "$NAME.mf"
 
 echo ">>>> re-create ova file with fixed appliance"
 tar cvf "$NAME.ova" "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
