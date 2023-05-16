@@ -6,6 +6,7 @@ use XML::LibXML;
 my $xmlns="http://schemas.dmtf.org/ovf/envelope/1";
 my $xmlns_vmw="http://www.vmware.com/schema/ovf";
 my $xmlns_vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData";
+my $xmlns_rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData";
 my $file = $ARGV[0];
 
 my $parser = XML::LibXML->new;
@@ -62,5 +63,14 @@ foreach my $vhs ($root->getElementsByTagNameNS($xmlns_vssd, 'VirtualSystemType')
     # https://endoflife.date/esxi
     $vhs->appendText('vmx-13');
 };
+
+# remove VirtualHardwareSection>/Item/Parent with value 3
+foreach my $parent ($root->getElementsByTagNameNS($xmlns_rasd, "Parent")) {
+    if ($parent->textContent eq '3') {
+	$parent->parentNode->removeChild($parent);
+    } else {
+	die "Node ".$parent->nodePath." is expected to have value 3 but it has ".$parent->textContent.". Termiating";
+    };
+}
 
 print $xml->toString;
