@@ -1,0 +1,339 @@
+#!/bin/bash
+
+# fail on any error
+set -e
+
+# unmount a appliance components
+unmount_nbd () {
+    for MNT in "$TARGET/dev/shm" "$TARGET/dev" "$TARGET/proc" "$TARGET/sys" "$TARGET"
+    do
+	if mount | grep $MNT > /dev/null
+	then
+	    umount "$MNT" && echo ">>>> $MNT unmouted"
+	fi
+    done
+    if [ -e "$NBD_DEV" ]
+    then
+	echo ">>>> $NBD_DEV exists unmouting"
+	sync
+	qemu-nbd -d "$NBD_DEV"
+    fi
+}
+
+if [ "x$BUILD_PARAMS" == "x" ]
+then
+    echo ">>>> BUILD_PARAMS undefined"
+    BUILD_PARAMS='vars/develop'
+
+    if [ "x$GITHUB_REF_NAME" != "x" ]
+    then
+	PARAMS="vars/$GITHUB_REF_NAME"
+	if [ -e "$PARAMS" ]
+	then
+	    echo ">>>> will use $PARAMS as BUILD_PARAMS"
+	    BUILD_PARAMS="$PARAMS"
+	fi
+    fi
+fi
+
+if [ -e "$BUILD_PARAMS" ]
+then
+    echo ">>>> sourcing parameters from $BUILD_PARAMS"
+    . $BUILD_PARAMS
+else
+    echo ">>>> file $BUILD_PARAMS doesn't exists, terminating"
+    exit 1
+fi
+
+SWAP_SIZE="1024"
+DISK_SIZE="50G"
+NBD_DEV="/dev/nbd0"
+TARGET="/mnt/target"
+SUITE="bullseye"
+HOST_NAME="czertainly"
+FQDN="czertainly.local"
+
+NAME="czertainly-appliance-$APPLIANCE_VERSION".`date "+%g%m%d.%H%M%S"`
+QCOW2_DISK_FILE="$WDIR/$NAME.qcow2"
+
+if [ ! -d "$WDIR" ]
+then
+    echo ">>>> creating working directory"
+    mkdir -p $WDIR
+fi
+
+echo ">>>> cleaning up posible remains from previous run"
+unmount_nbd
+
+echo ">>>> creating new filesystem"
+qemu-img create -f qcow2 $QCOW2_DISK_FILE $DISK_SIZE
+
+modprobe nbd
+
+qemu-nbd -c $NBD_DEV $QCOW2_DISK_FILE
+
+PARTED_COMMANDS="mklabel msdos \
+mkpart primary linux-swap $(( 1 ))MiB $(( 1 + SWAP_SIZE ))MiB \
+mkpart primary ext4 $(( 1 + SWAP_SIZE ))MiB -0 \
+set 2 boot on"
+
+echo $PARTED_COMMANDS
+
+parted -s -a optimal -- $NBD_DEV $PARTED_COMMANDS
+
+# sometimes it take some time to partions be reloaded
+sleep 1;
+[[ -e ${NBD_DEV}p1 ]] || sleep 15;
+
+mkswap -L swap ${NBD_DEV}p1
+
+mkfs -t ext4 -L root ${NBD_DEV}p2
+
+ROOT_UUID="$(blkid | grep "^${NBD_DEV}p[0-9]\+:" | grep ' LABEL="root" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
+SWAP_UUID="$(blkid | grep "^${NBD_DEV}p[0-9]\+:" | grep ' LABEL="swap" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
+
+echo ">>>> Root: $ROOT_UUID"
+echo ">>>> swap: $SWAP_UUID"
+
+echo ">>>> mount new system on $TARGET"
+[[ -d "$TARGET" ]] || mkdir -p "$TARGET"
+mount $ROOT_UUID "$TARGET"
+
+echo ">>>> bootstraping new Debian system"
+/usr/sbin/debootstrap --arch amd64 $SUITE "$TARGET" http://deb.debian.org/debian
+
+echo ">>>> mounting: proc, dev, sys"
+mount -o bind,ro /dev "$TARGET/dev"
+mount -t tmpfs none "$TARGET/dev/shm"
+mount -t proc none "$TARGET/proc"
+mount -t sysfs none "$TARGET/sys"
+
+cat - > "$TARGET/etc/fstab" <<EOF
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+$SWAP_UUID	none   		swap 	sw  		  0       0
+$ROOT_UUID	/		ext4 	errors=remount-ro 0	  1
+EOF
+cat "$TARGET/etc/fstab"
+
+cat - >> "$TARGET/etc/network/interaces" <<EOF
+auto lo
+iface lo inet loopback
+EOF
+echo "/etc/network/interaces:"
+cat "$TARGET/etc/network/interaces"
+
+cat - > "$TARGET/etc/network/interfaces.d/eth0" <<EOF
+allow-hotplug eth0
+iface eth0 inet dhcp
+EOF
+echo "/etc/network/interfaces.d/eth0:"
+cat "$TARGET/etc/network/interfaces.d/eth0"
+
+echo "$HOST_NAME" > "$TARGET/etc/hostname"
+echo "/etc/hostname:"
+cat "$TARGET/etc/hostname"
+
+cat - > "$TARGET/etc/hosts" <<EOF
+127.0.0.1       localhost
+127.0.1.1       $FQDN $HOST_NAME
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
+echo "/etc/hosts:"
+cat "$TARGET/etc/hosts"
+
+cat - > "$TARGET/etc/apt/sources.list" <<EOF
+deb http://deb.debian.org/debian/ bullseye main non-free contrib
+deb-src http://deb.debian.org/debian/ bullseye main non-free contrib
+
+deb http://security.debian.org/debian-security bullseye-security main non-free contrib
+deb-src http://security.debian.org/debian-security bullseye-security main non-free contrib
+
+deb http://deb.debian.org/debian/ bullseye-updates main non-free contrib
+deb-src http://deb.debian.org/debian/ bullseye-updates main non-free contrib
+
+deb $CZERTAINLY_DEB_REPOSITORY
+EOF
+wget -qq -O - "$CZERTAINLY_DEB_KEY" | gpg --dearmour > "$TARGET/etc/apt/trusted.gpg.d/deb.czertainly.com.gpg"
+
+echo "/etc/apt/sources.list:"
+cat "$TARGET/etc/apt/sources.list"
+
+echo "$APPLIANCE_VERSION" > "$TARGET/etc/czertainly_appliance_version"
+
+cat - > "$TARGET/tmp/init" <<EOF
+#!/bin/bash
+
+set -e
+
+export LANG=C.UTF-8
+export DEBIAN_FRONTEND=noninteractive
+
+# semik nemyslim ze je treba, to uz se dela nahore
+# mount -a
+
+echo ">>>>>> setting timezone"
+debconf-set-selections <<S2EOF
+tzdata tzdata/Areas select Europe
+tzdata tzdata/Zones/Europe select Prague
+S2EOF
+# This is necessary as tzdata will assume these are manually set and override the debconf values with their settings
+rm -f /etc/localtime /etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+echo ">>>>>> configuring locales and keyboard"
+debconf-set-selections <<S2EOF
+locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8
+locales locales/default_environment_locale select en_US
+keyboard-configuration keyboard-configuration/layoutcode string us
+S2EOF
+# Stop anything overriding debconf's settings
+rm -f /etc/default/locale /etc/locale.gen /etc/default/keyboard
+apt-get -qq -y install locales console-setup
+
+echo ">>>>>> update apt cache"
+apt-get -qq -y update
+
+echo ">>>>>> installing kernel"
+apt-get -qq -y install linux-image-amd64
+
+echo ">>>>>> installing bootloader"
+apt-get -qq -y install grub2
+grub-install ${NBD_DEV}
+echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
+sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0"/' /etc/default/grub
+update-grub
+
+
+echo ">>>>>> install CZERTAINLY dependencies"
+# sudo is needed for TUI system operations
+INSTALL="sudo"
+
+# SSH is needed for remote access to appliance
+INSTALL="\$INSTALL openssh-server"
+
+# dbus is needed for inner system communication like ACPI shutdown
+INSTALL="\$INSTALL dbus"
+
+# suport for correct certiticates validation
+INSTALL="\$INSTALL ssl-cert ca-certificates"
+
+# this should be part of czertainly-appliance-tool dependencies
+INSTALL="\$INSTALL ansible python3-apt python3-kubernetes git jq dialog python3"
+
+# this is needed for branding
+INSTALL="\$INSTALL plymouth plymouth-themes"
+
+# this isn't mandatory
+#apt-get -qq -y install gnupg vim fasttrack-archive-keyring
+
+echo ">>>>>> INSTALL=\$INSTALL"
+apt-get -qq -y install \$INSTALL
+
+echo ">>>>>> add czertainly user"
+groupadd czertainly
+useradd czertainly -s /bin/bash -m -g czertainly -G sudo,audio,cdrom,video,adm,netdev,ssl-cert -c 'CZERTAINLY Operator'
+chpasswd << S2EOF
+czertainly:newgenerationtrustcare
+S2EOF
+
+apt-get -qq  install -y czertainly-appliance-tools
+
+# We need SCP so we can't change shell. File .bashrc is used only in
+# interactive mode.
+echo "
+. /usr/bin/czertainly-exec-tui
+" >> /home/czertainly/.bashrc
+
+# During installation is $HOME variable set to / so ansible-galaxy
+# installs into /
+export HOME=/root
+ansible-galaxy collection install kubernetes.core
+
+# Appliance branding
+export ANSIBLE_CONFIG=/etc/czertainly-ansible/ansible.cfg
+ansible-playbook /etc/czertainly-ansible/playbooks/czertainly-branding.yml
+
+echo ">>>>>> clean apt cache"
+apt-get -qq -y remove --purge tasksel tasksel-data busybox
+apt-get -qq -y autoremove
+apt-get -qq -y clean
+EOF
+
+echo ">>>> initalitialize appliance"
+chmod +x "$TARGET/tmp/init"
+chroot "$TARGET" "/tmp/init"
+
+if [ $APPLIANCE_DEVELOP_VERSION -eq 1 ]
+then
+    mkdir "$TARGET/root/.ssh"
+    mkdir "$TARGET/home/czertainly/.ssh"
+    cp files/authorized_keys "$TARGET/root/.ssh"
+    cp files/authorized_keys "$TARGET/home/czertainly/.ssh"
+fi
+
+sync
+unmount_nbd
+
+PRIMARY_INTERFACE=`route | grep '^default' | grep -o '[^ ]*$'`
+
+echo ">>>> creating VirtualBox Virtual Appliance"
+VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
+
+VBoxManage modifyvm "$NAME" --ioapic on --acpi on
+VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
+VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 16
+VBoxManage modifyvm "$NAME" --nic1 bridged --bridgeadapter1=$PRIMARY_INTERFACE
+VBoxManage modifyvm "$NAME" --rtcuseutc=on
+# VBoxManage is complaining that "Warning: --audio is deprecated and
+# will be removed soon. Use --audio-driver instead!" but
+# --audio-driver produces ova with audio enabled and import into
+# VMware fails.
+VBoxManage modifyvm "$NAME" --audio none
+
+VBoxManage storagectl "$NAME" --name "SATA" --add sata --controller IntelAhci --portcount=1
+VBoxManage storageattach "$NAME"  --storagectl "SATA" --port 0 --device 0 --type hdd --medium $QCOW2_DISK_FILE
+VBoxManage modifyvm "$NAME" --boot1 disk --boot2 none --boot3 none --boot4 none
+
+echo ">>>> exporting VirtualBox Virtual Appliance into ova file"
+VBoxManage export "$NAME" --output "$WDIR/$NAME.ova" --ovf10 --manifest
+
+echo ">>>> removing VirtualBox Virtual Appliance"
+VBoxManage unregistervm "$NAME" --delete --delete-all
+
+# VitrualBox is marking this virtual system as virtualbox-2.2 which is
+# for some reason problem for VMplayer. More info
+# https://www.virtualbox.org/ticket/7982 Here we extract produced ova,
+# modify virtual system specification, recreate manifest and tar it
+# again back into ova.
+echo ">>>> extracting appliance"
+ls -l "$WDIR"
+cd $WDIR
+tar xvf "$NAME.ova"
+
+echo ">>>> apply vmware fix"
+mv "$NAME.ovf" "$NAME.ovf.orig"
+../files/fix4vmware.pl "$NAME.ovf.orig" > "$NAME.ovf"
+diff "$NAME.ovf.orig" "$NAME.ovf" || true
+sha256sum --tag "$NAME.ovf" "$NAME"*.vmdk | sed "s/^SHA256 */SHA256/" | tee "$NAME.mf"
+
+echo ">>>> re-create ova file with fixed appliance"
+tar cvf "$NAME.ova" "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
+
+echo ">>>> clean $WDIR"
+rm "$NAME.ovf" "$NAME.ovf.orig" "$NAME.mf" "$NAME"*.vmdk
+cd ..
+ls -l "$WDIR"
+
+echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
+chmod 644 "$WDIR/$NAME.ova"
+ls -l "$WDIR"

@@ -1,0 +1,5 @@
+APPLIANCE_VERSION="2.7.1"
+APPLIANCE_DEVELOP_VERSION=1
+CZERTAINLY_DEB_REPOSITORY="http://deb.czertainly.com/ bullseye main"
+CZERTAINLY_DEB_KEY="http://deb.czertainly.com/deb.czertainly.com.gpg"
+WDIR=tmp

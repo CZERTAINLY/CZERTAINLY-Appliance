@@ -1,6 +1,6 @@
 *~
 tmp/
-vars/local.yml
+vars/local
 
 HELP.md
 target/
