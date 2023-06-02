@@ -33,13 +33,13 @@ jobs:
 
       - name: Read filename of original OVF file
         run: echo APPLIANCE_ORIG_OVF=`cat tmp/appliance-orig-ovf` >> $GITHUB_OUTPUT
-        id: appliance_name
+        id: appliance_ovf
 
       - name: Save original OVF file
         uses: actions/upload-artifact@v3
         with:
           name: czertainly-appliance-original-ovf-file
-          path: "${{ steps.appliance_name.outputs.APPLIANCE_ORIG_OVF }}"
+          path: "${{ steps.appliance_ovf.outputs.APPLIANCE_ORIG_OVF }}"
 
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v3
