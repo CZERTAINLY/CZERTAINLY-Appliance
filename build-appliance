@@ -336,4 +336,6 @@ ls -l "$WDIR"
 
 echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
+echo "$WDIR/$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
+chmod 644 "$WDIR/$NAME.ovf.orig"
 ls -l "$WDIR"
