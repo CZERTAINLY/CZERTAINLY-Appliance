@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Envelope ovf:version="1.0" xml:lang="en-US" xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vbox="http://www.virtualbox.org/ovf/machine">
+<Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vbox="http://www.virtualbox.org/ovf/machine" xmlns:vmw="http://www.vmware.com/schema/ovf" ovf:version="1.0" xml:lang="en-US">
   <References>
     <File ovf:id="file1" ovf:href="czertainly-appliance-2.7.1.rc7.230602.122657-disk001.vmdk"/>
   </References>
@@ -15,18 +15,15 @@
   </NetworkSection>
   <VirtualSystem ovf:id="czertainly-appliance-2.7.1.rc7.230602.122657">
     <Info>A virtual machine</Info>
-    <OperatingSystemSection ovf:id="102">
-      <Info>The kind of installed guest operating system</Info>
-      <Description>Other_64</Description>
-      <vbox:OSType ovf:required="false">Linux_64</vbox:OSType>
-    </OperatingSystemSection>
+<Name>czertainly-appliance-2.7.1.rc7.230602.122657</Name>
+    <OperatingSystemSection ovf:id="102" ovf:version="11" vmw:osType="otherLinux64Guest"><Info>The kind of installed guest operating system</Info></OperatingSystemSection>
     <VirtualHardwareSection>
       <Info>Virtual hardware requirements for a virtual machine</Info>
       <System>
         <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
         <vssd:InstanceID>0</vssd:InstanceID>
         <vssd:VirtualSystemIdentifier>czertainly-appliance-2.7.1.rc7.230602.122657</vssd:VirtualSystemIdentifier>
-        <vssd:VirtualSystemType>virtualbox-2.2</vssd:VirtualSystemType>
+        <vssd:VirtualSystemType>vmx-13</vssd:VirtualSystemType>
       </System>
       <Item>
         <rasd:Caption>4 virtual CPU</rasd:Caption>
@@ -51,9 +48,10 @@
         <rasd:Description>SATA Controller</rasd:Description>
         <rasd:ElementName>sataController0</rasd:ElementName>
         <rasd:InstanceID>3</rasd:InstanceID>
-        <rasd:ResourceSubType>AHCI</rasd:ResourceSubType>
+        <rasd:ResourceSubType>vmware.sata.ahci</rasd:ResourceSubType>
         <rasd:ResourceType>20</rasd:ResourceType>
-      </Item>
+      	<vmw:CoresPerSocket ovf:required="false">1</vmw:CoresPerSocket>
+</Item>
       <Item>
         <rasd:AddressOnParent>0</rasd:AddressOnParent>
         <rasd:Caption>disk1</rasd:Caption>
