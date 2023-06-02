@@ -341,6 +341,6 @@ cat "$WDIR/appliance-orig-ovf"
 ls -l `cat "$WDIR/appliance-orig-ovf"`
 
 echo ">>>> clean $WDIR"
-rm "$WDIR/$NAME.ovf" "$WDIR/$NAME.ovf.orig" "$WDIR/$NAME.mf" "$WDIR/$NAME"*.vmdk
+rm "$WDIR/$NAME.ovf" "$WDIR/$NAME.mf" "$WDIR/$NAME"*.vmdk
 
 ls -l "$WDIR"
