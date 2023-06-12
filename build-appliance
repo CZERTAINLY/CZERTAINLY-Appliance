@@ -330,10 +330,12 @@ echo ">>>> re-create ova file with fixed appliance"
 tar cvf "$NAME.ova" "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
 
 echo ">>>> clean $WDIR"
-rm "$NAME.ovf" "$NAME.ovf.orig" "$NAME.mf" "$NAME"*.vmdk
+rm "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
 cd ..
-ls -l "$WDIR"
 
 echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
+echo "$WDIR/$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
+chmod 644 "$WDIR/$NAME.ovf.orig"
+
 ls -l "$WDIR"

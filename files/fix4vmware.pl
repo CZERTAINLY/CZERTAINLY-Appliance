@@ -64,12 +64,20 @@ foreach my $vhs ($root->getElementsByTagNameNS($xmlns_vssd, 'VirtualSystemType')
     $vhs->appendText('vmx-13');
 };
 
-# remove VirtualHardwareSection>/Item/Parent with value 3
-foreach my $parent ($root->getElementsByTagNameNS($xmlns_rasd, "Parent")) {
-    if ($parent->textContent eq '3') {
-	$parent->parentNode->removeChild($parent);
-    } else {
-	die "Node ".$parent->nodePath." is expected to have value 3 but it has ".$parent->textContent.". Termiating";
+# locate section with AHCI SATA controller and alter it to plase VMWare Sphere Client
+foreach my $res_subtype ($root->getElementsByTagNameNS($xmlns_rasd, "ResourceSubType")) {
+    if ($res_subtype->textContent eq 'AHCI') {
+	# replace AHCI with vmware.sata.ahci
+	$res_subtype->removeChildNodes;
+	$res_subtype->appendText('vmware.sata.ahci');
+	# add <vmw:CoresPerSocket ovf:required="false">1</vmw:CoresPerSocket>
+	my $coresPerSocket = XML::LibXML::Element->new('CoresPerSocket');
+	$coresPerSocket->setNamespace($xmlns_vmw, 'vmw', 1);
+	$coresPerSocket->setAttribute('ovf:required', 'false');
+	$coresPerSocket->appendText('1');
+	$res_subtype->parentNode->appendText("\t");
+	$res_subtype->parentNode->appendChild($coresPerSocket);
+	$res_subtype->parentNode->appendText("\n");
     };
 }
 
