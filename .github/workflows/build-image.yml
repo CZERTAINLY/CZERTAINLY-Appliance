@@ -1,0 +1,48 @@
+---
+on:
+  push:
+    branches:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add VirtualBox and other dependencies
+        run: |
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" | sudo tee -a /etc/apt/sources.list
+          wget -O- https://download.virtualbox.org/virtualbox/debian/oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
+          sudo apt update
+          sudo apt install virtualbox-7.0 qemu-utils debootstrap dosfstools debian-keyring debian-archive-keyring
+
+      - name: Build package
+        run: sudo bash ./build-appliance
+        id: build
+
+      # GITHUB_OUTPUT is in Github Action filled with temporary
+      # filename to store output. Variables are not passed thought
+      # sudo. One can use `--preserve-env=` but when script is
+      # executed localy, ie. without github enviroment it will
+      # fail. So I think that it is better to use our own temp file
+      # for name of builded appliance.
+      - name: Read filename of builded appliance
+        run: echo APPLIANCE_FILENAME=`cat tmp/appliance-last-name` >> $GITHUB_OUTPUT
+        id: appliance_name
+
+      - name: Read filename of original OVF file
+        run: echo APPLIANCE_ORIG_OVF=`cat tmp/appliance-orig-ovf` >> $GITHUB_OUTPUT
+        id: appliance_ovf
+
+      - name: Save original OVF file
+        uses: actions/upload-artifact@v3
+        with:
+          name: czertainly-appliance-original-ovf-file
+          path: "${{ steps.appliance_ovf.outputs.APPLIANCE_ORIG_OVF }}"
+
+      - name: Save builded CZERTAINLY Appliance OVA file
+        uses: actions/upload-artifact@v3
+        with:
+          name: czertainly-appliance-ova-file
+          path: "${{ steps.appliance_name.outputs.APPLIANCE_FILENAME }}"
