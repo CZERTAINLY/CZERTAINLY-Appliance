@@ -275,7 +275,7 @@ chroot "$TARGET" "/tmp/init"
 
 if [ $APPLIANCE_DEVELOP_VERSION -eq 1 ]
 then
-    mkdir "$TARGET/root/.ssh"
+    test -d "$TARGET/root/.ssh" || mkdir "$TARGET/root/.ssh"
     mkdir "$TARGET/home/czertainly/.ssh"
     cp files/authorized_keys "$TARGET/root/.ssh"
     cp files/authorized_keys "$TARGET/home/czertainly/.ssh"
