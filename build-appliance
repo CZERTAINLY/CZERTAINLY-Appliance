@@ -20,6 +20,8 @@ unmount_nbd () {
     fi
 }
 
+set
+
 if [ "x$BUILD_PARAMS" == "x" ]
 then
     echo ">>>> BUILD_PARAMS undefined"
