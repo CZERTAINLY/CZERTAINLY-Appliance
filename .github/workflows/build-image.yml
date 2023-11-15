@@ -3,11 +3,6 @@ on:
   push:
     branches:
 
-env:
-  GITHUB_BRANCH: ${{ github.ref_name }}
-  GITHUB_BBBB: testing
-  DAY_OF_WEEK: Monday
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,7 +21,10 @@ jobs:
           sudo apt install virtualbox-7.0 qemu-utils debootstrap dosfstools debian-keyring debian-archive-keyring
 
       - name: Build package
-        run: sudo bash ./build-appliance
+        run: |
+          BUILD_PARAMS=vars/develop
+          [ "${{ github.ref_name }}" == 'main' ] && BUILD_PARAMS=vars/main
+          sudo BUILD_PARAMS=$BUILD_PARAMS bash ./build-appliance
         id: build
 
       # GITHUB_OUTPUT is in Github Action filled with temporary
