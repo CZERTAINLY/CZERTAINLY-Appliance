@@ -3,12 +3,18 @@ on:
   push:
     branches:
 
+env:
+  GITHUB_BRANCH: ${{ github.ref_name }}
+  GITHUB_BBBB: testing
+  DAY_OF_WEEK: Monday
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_BRANCH: ${{ github.ref_name }}
     steps:
+      - name: Show env
+        run: set
+
       - name: Checkout code
         uses: actions/checkout@v3
 
