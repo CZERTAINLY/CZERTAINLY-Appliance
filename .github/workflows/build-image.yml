@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_BRANCH: ${{ github.ref_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
