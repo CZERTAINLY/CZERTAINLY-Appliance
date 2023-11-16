@@ -27,10 +27,11 @@ then
 
     if [ "x$GITHUB_REF_NAME" != "x" ]
     then
+    echo ">>>> GITHUB_REF_NAME=$GITHUB_REF_NAME"
 	PARAMS="vars/$GITHUB_REF_NAME"
 	if [ -e "$PARAMS" ]
 	then
-	    echo ">>>> will use $PARAMS as BUILD_PARAMS"
+	    echo ">>>> will use $PARAMS as BUILD_PARAMS based on GITHUB_REF_NAME=$GITHUB_REF_NAME"
 	    BUILD_PARAMS="$PARAMS"
 	fi
     fi
