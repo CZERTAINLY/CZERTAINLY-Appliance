@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Add VirtualBox and other dependencies
         run: |
@@ -18,7 +18,7 @@ jobs:
           sudo apt install virtualbox-7.0 qemu-utils debootstrap dosfstools debian-keyring debian-archive-keyring
 
       - name: Build package
-        run: sudo bash ./build-appliance
+        run: sudo --preserve-env=GITHUB_REF_NAME bash ./build-appliance
         id: build
 
       # GITHUB_OUTPUT is in Github Action filled with temporary
