@@ -274,8 +274,10 @@ echo ">>>> initalitialize appliance"
 chmod +x "$TARGET/tmp/init"
 chroot "$TARGET" "/tmp/init"
 
+echo ">>>> running with APPLIANCE_DEVELOP_VERSION=$APPLIANCE_DEVELOP_VERSION"
 if [ $APPLIANCE_DEVELOP_VERSION -eq 1 ]
 then
+    echo ">>>> adding developers SSH keys to the Virtual Appliance"
     test -d "$TARGET/root/.ssh" || mkdir "$TARGET/root/.ssh"
     mkdir "$TARGET/home/czertainly/.ssh"
     cp files/authorized_keys "$TARGET/root/.ssh"
