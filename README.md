@@ -1,6 +1,6 @@
 # CZERTAINLY Appliance Builder
 
-Builder of [CZERTAINLY Appliance](https://docs.czertainly.com/docs/installation-guide/deployment/deployment-appliance/overview), if you are not interested in developement you should just [download](https://docs.czertainly.com/docs/installation-guide/deployment/deployment-appliance/overview#download-and-import-image) published Appliance image. This repository is ment for developers.
+Builder of [CZERTAINLY Appliance](https://docs.czertainly.com/docs/certificate-key/installation-guide/deployment/deployment-appliance/overview), if you are not interested in developement you should just [download](https://docs.czertainly.com/docs/certificate-key/installation-guide/deployment/deployment-appliance/overview#download-and-import-image) published Appliance image. This repository is ment for developers.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Finished apliance is exported into file `tmp/czertainly-appliance-$APPLIANCEVERS
 
 ## Usage of the Appliance
 
-Appliance comes with preconfigured Debian system. You need to initialiaze rke2 cluster and install CZERTAINLY. Please follow instructions from [offical documentation](https://docs.czertainly.com/docs/installation-guide/deployment/deployment-appliance/initialization).
+Appliance comes with preconfigured Debian system. You need to initialiaze rke2 cluster and install CZERTAINLY. Please follow instructions from [offical documentation](https://docs.czertainly.com/docs/certificate-key/installation-guide/deployment/deployment-appliance/initialization).
 
 ## Tips for developers
 
@@ -42,9 +42,9 @@ roles:
   - [ansible-role-rke2](https://github.com/3KeyCompany/ansible-role-rke2)
   - [ansible-role-czertainly](https://github.com/3KeyCompany/ansible-role-czertainly)
 
-they are provided by package [`czertainly-appliance-tools`](https://github.com/semik/CZERTAINLY-Appliance-Tools), without any git tracking informations. If you need to work on any of them, best option is to clone a repository of the role you need to work on into right place under `/etc/czertainly-ansible/roles`.
+they are provided by package [`czertainly-appliance-tools`](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Tools), without any git tracking informations. If you need to work on any of them, best option is to clone a repository of the role you need to work on into right place under `/etc/czertainly-ansible/roles`.
 
-If you want to run Ansible playbooks by hand don't forget to set `ANSIBLE_CONFIG` to [right](https://github.com/semik/CZERTAINLY-Appliance-Tools/blob/main/usr/bin/czertainly-tui#L26) values. Typicaly you can run instalation command from menu of Text UI.
+If you want to run Ansible playbooks by hand don't forget to set `ANSIBLE_CONFIG` to [right](https://github.com/3KeyCompany/CZERTAINLY-Appliance-Tools/blob/master/usr/bin/czertainly-tui#L26) values. Typicaly you can run instalation command from menu of Text UI.
 
 All Ansible roles have tags. You can run only parts you need to re-run to save your time. For example, when you want just reinstall czeratinly you can do:
 ```
