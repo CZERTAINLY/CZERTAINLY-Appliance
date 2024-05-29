@@ -19,8 +19,9 @@ In short:
 ```
 git clone https://github.com/3KeyCompany/CZERTAINLY-Appliance.git
 cd CZERTAINLY-Appliance
-./build-appliance
+sudo ./build-appliance
 ```
+Building requires root permisions as it creates QUEMU virtual disk device.
 
 Finished appliance is exported into file `tmp/czertainly-appliance-$APPLIANCEVERSION."%g%m%d.%H%M%S.ova`. The process takes about 7 minutes on i7-6700 CPU @ 3.40GHz.
 
