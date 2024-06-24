@@ -211,7 +211,7 @@ echo ">>>>>> installing bootloader"
 apt-get -qq -y install grub2
 grub-install ${NBD_DEV}
 echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
-sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0"/' /etc/default/grub
+sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0 ipv6.disable=1" /' /etc/default/grub
 update-grub
 
 
