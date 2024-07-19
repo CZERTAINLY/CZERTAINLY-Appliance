@@ -20,6 +20,11 @@ unmount_nbd () {
     fi
 }
 
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root (needed for qemu). Exiting."
+  exit
+fi
+
 if [ "x$BUILD_PARAMS" == "x" ]
 then
     echo ">>>> BUILD_PARAMS undefined"
