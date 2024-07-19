@@ -287,7 +287,7 @@ fi
 sync
 unmount_nbd
 
-PRIMARY_INTERFACE=`route | grep '^default' | grep -o '[^ ]*$'`
+PRIMARY_INTERFACE=`ip route | grep -v linkdown | grep '^default' | awk '{print $5}'`
 
 echo ">>>> creating VirtualBox Virtual Appliance"
 VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
