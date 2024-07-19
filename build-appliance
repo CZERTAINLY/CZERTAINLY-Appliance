@@ -157,6 +157,19 @@ EOF
 echo "/etc/hosts:"
 cat "$TARGET/etc/hosts"
 
+# We need to have search path for kubectl and firends to be present even for
+# completely new Appliance. Otherwise user is getting incomplete info at end of
+# instalation process.
+cat - > "$TARGET/etc/profile.d/rke2.sh" <<EOF
+#!/bin/bash
+
+PATH=/var/lib/rancher/rke2/bin/:$PATH
+export PATH
+EOF
+echo "/etc/profile.d/rke2.sh:"
+cat "$TARGET/etc/profile.d/rke2.sh"
+chmod + "$TARGET/etc/profile.d/rke2.sh"
+
 cat - > "$TARGET/etc/apt/sources.list" <<EOF
 deb http://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
 deb-src http://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
