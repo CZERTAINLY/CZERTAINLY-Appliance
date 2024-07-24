@@ -20,6 +20,11 @@ unmount_nbd () {
     fi
 }
 
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root (needed for qemu). Exiting."
+  exit
+fi
+
 if [ "x$BUILD_PARAMS" == "x" ]
 then
     echo ">>>> BUILD_PARAMS undefined"
@@ -152,6 +157,19 @@ EOF
 echo "/etc/hosts:"
 cat "$TARGET/etc/hosts"
 
+# We need to have search path for kubectl and firends to be present even for
+# completely new Appliance. Otherwise user is getting incomplete info at end of
+# instalation process.
+cat - > "$TARGET/etc/profile.d/rke2.sh" <<EOF
+#!/bin/bash
+
+PATH=/var/lib/rancher/rke2/bin/:$PATH
+export PATH
+EOF
+echo "/etc/profile.d/rke2.sh:"
+cat "$TARGET/etc/profile.d/rke2.sh"
+chmod + "$TARGET/etc/profile.d/rke2.sh"
+
 cat - > "$TARGET/etc/apt/sources.list" <<EOF
 deb http://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
 deb-src http://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
@@ -211,7 +229,7 @@ echo ">>>>>> installing bootloader"
 apt-get -qq -y install grub2
 grub-install ${NBD_DEV}
 echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
-sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0"/' /etc/default/grub
+sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0 ipv6.disable=1" /' /etc/default/grub
 update-grub
 
 
@@ -287,7 +305,7 @@ fi
 sync
 unmount_nbd
 
-PRIMARY_INTERFACE=`route | grep '^default' | grep -o '[^ ]*$'`
+PRIMARY_INTERFACE=`ip route | grep -v linkdown | grep '^default' | awk '{print $5}'`
 
 echo ">>>> creating VirtualBox Virtual Appliance"
 VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
