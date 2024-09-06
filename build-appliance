@@ -270,6 +270,7 @@ apt-get -qq  install -y czertainly-appliance-tools
 # We need SCP so we can't change shell. File .bashrc is used only in
 # interactive mode.
 echo "
+kubectl config set-context --current --namespace czertainly
 . /usr/bin/czertainly-exec-tui
 " >> /home/czertainly/.bashrc
 
