@@ -270,9 +270,19 @@ apt-get -qq  install -y czertainly-appliance-tools
 # We need SCP so we can't change shell. File .bashrc is used only in
 # interactive mode.
 echo "
-kubectl config set-context --current --namespace czertainly
+if [ -w ~/.kube/config ]
+then
+    kubectl config set-context --current --namespace czertainly
+fi
 . /usr/bin/czertainly-exec-tui
 " >> /home/czertainly/.bashrc
+
+echo "
+if [ -w ~/.kube/config ]
+then
+    kubectl config set-context --current --namespace czertainly
+fi
+" >> /root/.bashrc
 
 # During installation is $HOME variable set to / so ansible-galaxy
 # installs into /
