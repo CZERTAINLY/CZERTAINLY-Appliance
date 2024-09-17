@@ -1,7 +1,7 @@
 ---
 on:
   push:
-    branches:
+    branches: '*'
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: czertainly-appliance-original-ovf-file
-          path: "${{ steps.appliance_ovf.outputs.APPLIANCE_ORIG_OVF }}"
+          path: "tmp/${{ steps.appliance_ovf.outputs.APPLIANCE_ORIG_OVF }}"
 
       - name: Save builded CZERTAINLY Appliance OVA file
         uses: actions/upload-artifact@v4

@@ -370,9 +370,9 @@ echo ">>>> clean $WDIR"
 rm "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
 cd ..
 
-echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
+echo "$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
-echo "$WDIR/$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
+echo "$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
 chmod 644 "$WDIR/$NAME.ovf.orig"
 
 ls -l "$WDIR"
