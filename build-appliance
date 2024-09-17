@@ -322,8 +322,8 @@ echo ">>>> creating VirtualBox Virtual Appliance"
 VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
 
 VBoxManage modifyvm "$NAME" --ioapic on --acpi on
-VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
-VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 16
+VBoxManage modifyvm "$NAME" --memory 12288 --cpus 4 --pae=off
+VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 32
 VBoxManage modifyvm "$NAME" --nic1 bridged --bridgeadapter1=$PRIMARY_INTERFACE
 VBoxManage modifyvm "$NAME" --rtcuseutc=on
 # VBoxManage is complaining that "Warning: --audio is deprecated and
