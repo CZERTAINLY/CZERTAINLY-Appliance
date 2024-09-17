@@ -65,7 +65,6 @@ then
     DEV_NAME="-dev"
 fi
 NAME="czertainly-appliance-$APPLIANCE_VERSION$DEV_NAME".`date "+%g%m%d.%H%M%S"`
-echo "FNAME=$NAME" >> $GITHUB_OUTPUT
 QCOW2_DISK_FILE="$WDIR/$NAME.qcow2"
 
 if [ ! -d "$WDIR" ]
