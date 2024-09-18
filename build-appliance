@@ -59,7 +59,12 @@ SUITE="bookworm"
 HOST_NAME="czertainly"
 FQDN="czertainly.local"
 
-NAME="czertainly-appliance-$APPLIANCE_VERSION".`date "+%g%m%d.%H%M%S"`
+DEV_NAME=""
+if [ $APPLIANCE_DEVELOP_VERSION -eq 1 ]
+then
+    DEV_NAME="-dev"
+fi
+NAME="czertainly-appliance-$APPLIANCE_VERSION$DEV_NAME".`date "+%g%m%d.%H%M%S"`
 QCOW2_DISK_FILE="$WDIR/$NAME.qcow2"
 
 if [ ! -d "$WDIR" ]
@@ -187,7 +192,7 @@ wget -qq -O - "$CZERTAINLY_DEB_KEY" | gpg --dearmour > "$TARGET/etc/apt/trusted.
 echo "/etc/apt/sources.list:"
 cat "$TARGET/etc/apt/sources.list"
 
-echo "$APPLIANCE_VERSION" > "$TARGET/etc/czertainly_appliance_version"
+echo "$APPLIANCE_VERSION$DEV_NAME" > "$TARGET/etc/czertainly_appliance_version"
 
 cat - > "$TARGET/tmp/init" <<EOF
 #!/bin/bash
@@ -270,8 +275,19 @@ apt-get -qq  install -y czertainly-appliance-tools
 # We need SCP so we can't change shell. File .bashrc is used only in
 # interactive mode.
 echo "
+if [ -w ~/.kube/config ]
+then
+    kubectl config set-context --current --namespace czertainly
+fi
 . /usr/bin/czertainly-exec-tui
 " >> /home/czertainly/.bashrc
+
+echo "
+if [ -w ~/.kube/config ]
+then
+    kubectl config set-context --current --namespace czertainly
+fi
+" >> /root/.bashrc
 
 # During installation is $HOME variable set to / so ansible-galaxy
 # installs into /
@@ -311,8 +327,8 @@ echo ">>>> creating VirtualBox Virtual Appliance"
 VBoxManage createvm --name "$NAME" --ostype Linux_64 --register
 
 VBoxManage modifyvm "$NAME" --ioapic on --acpi on
-VBoxManage modifyvm "$NAME" --memory 8192 --cpus 4 --pae=off
-VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 16
+VBoxManage modifyvm "$NAME" --memory 12288 --cpus 4 --pae=off
+VBoxManage modifyvm "$NAME" --graphicscontroller vmsvga --vram 32
 VBoxManage modifyvm "$NAME" --nic1 bridged --bridgeadapter1=$PRIMARY_INTERFACE
 VBoxManage modifyvm "$NAME" --rtcuseutc=on
 # VBoxManage is complaining that "Warning: --audio is deprecated and
@@ -354,9 +370,9 @@ echo ">>>> clean $WDIR"
 rm "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
 cd ..
 
-echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
+echo "$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
-echo "$WDIR/$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
+echo "$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
 chmod 644 "$WDIR/$NAME.ovf.orig"
 
 ls -l "$WDIR"
