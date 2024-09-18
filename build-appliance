@@ -59,7 +59,12 @@ SUITE="bookworm"
 HOST_NAME="czertainly"
 FQDN="czertainly.local"
 
-NAME="czertainly-appliance-$APPLIANCE_VERSION".`date "+%g%m%d.%H%M%S"`
+DEV_NAME=""
+if [ $APPLIANCE_DEVELOP_VERSION -eq 1 ]
+then
+    DEV_NAME="-dev"
+fi
+NAME="czertainly-appliance-$APPLIANCE_VERSION$DEV_NAME".`date "+%g%m%d.%H%M%S"`
 QCOW2_DISK_FILE="$WDIR/$NAME.qcow2"
 
 if [ ! -d "$WDIR" ]
@@ -187,7 +192,7 @@ wget -qq -O - "$CZERTAINLY_DEB_KEY" | gpg --dearmour > "$TARGET/etc/apt/trusted.
 echo "/etc/apt/sources.list:"
 cat "$TARGET/etc/apt/sources.list"
 
-echo "$APPLIANCE_VERSION" > "$TARGET/etc/czertainly_appliance_version"
+echo "$APPLIANCE_VERSION$DEV_NAME" > "$TARGET/etc/czertainly_appliance_version"
 
 cat - > "$TARGET/tmp/init" <<EOF
 #!/bin/bash
@@ -365,9 +370,9 @@ echo ">>>> clean $WDIR"
 rm "$NAME.ovf" "$NAME.mf" "$NAME"*.vmdk
 cd ..
 
-echo "$WDIR/$NAME.ova" > "$WDIR/appliance-last-name"
+echo "$NAME.ova" > "$WDIR/appliance-last-name"
 chmod 644 "$WDIR/$NAME.ova"
-echo "$WDIR/$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
+echo "$NAME.ovf.orig" > "$WDIR/appliance-orig-ovf"
 chmod 644 "$WDIR/$NAME.ovf.orig"
 
 ls -l "$WDIR"
