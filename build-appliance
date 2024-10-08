@@ -263,6 +263,9 @@ INSTALL="\$INSTALL plymouth plymouth-themes"
 echo ">>>>>> INSTALL=\$INSTALL"
 apt-get -qq -y install \$INSTALL
 
+# delete pre-generated SSH keys
+rm /etc/ssh/ssh*key /etc/ssh/ssh*key.pub
+
 echo ">>>>>> add czertainly user"
 groupadd czertainly
 useradd czertainly -s /bin/bash -m -g czertainly -G sudo,audio,cdrom,video,adm,netdev,ssl-cert -c 'CZERTAINLY Operator'
