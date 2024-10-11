@@ -237,7 +237,6 @@ echo "GRUB_DISABLE_OS_PROBER=true" >> /etc/default/grub
 sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash net.ifnames=0 biosdevname=0 ipv6.disable=1" /' /etc/default/grub
 update-grub
 
-
 echo ">>>>>> install CZERTAINLY dependencies"
 # sudo is needed for TUI system operations
 INSTALL="sudo"
@@ -256,6 +255,9 @@ INSTALL="\$INSTALL ansible python3-apt python3-kubernetes git jq dialog python3"
 
 # this is needed for branding
 INSTALL="\$INSTALL plymouth plymouth-themes"
+
+# resovconf is needed for propagating DNS settings from network/interfaces/
+INSTALL="\$INSTALL resolvconf"
 
 # this isn't mandatory
 #apt-get -qq -y install gnupg vim fasttrack-archive-keyring
